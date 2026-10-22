@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Plan — Academic Daily Planner for College Students
 
-## Getting Started
+"Plan" is an opinionated, minimalist daily planner web application engineered for university students to manage coursework, deadlines, exams, projects, time-blocked daily schedules, and academic momentum.
 
-First, run the development server:
+Designed with **Apple's Human Interface Guidelines** and visual source of truth from **Google Stitch** ("Student Daily Planner Dashboard", Design System: *Academic Clarity*).
 
+---
+
+## 🚀 Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) 15 (App Router) + React 19 + TypeScript (strict mode)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) v4 with design tokens mapped to CSS variables
+- **UI & Components**: Custom [shadcn/ui](https://ui.shadcn.com/) primitives styled for Apple HIG
+- **Database & Auth**: [Supabase](https://supabase.com/) Postgres + Supabase Auth (`@supabase/ssr`) with Row Level Security (RLS)
+- **ORM & Migrations**: [Drizzle ORM](https://orm.drizzle.team/) + `drizzle-kit`
+- **Data Fetching & State**: [TanStack Query v5](https://tanstack.com/query/latest)
+- **Drag & Drop**: [@dnd-kit](https://dndkit.com/)
+- **Dates**: [date-fns](https://date-fns.org/)
+- **Transitions**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons & Charts**: [Lucide React](https://lucide.dev/) + [Recharts](https://recharts.org/)
+
+---
+
+## 🎨 Design System
+
+All design tokens are documented in [`DESIGN.md`](./DESIGN.md) and exposed as CSS variables:
+- **Primary Accent**: Electric Indigo (`#5E5CE6`)
+- **Canvas / Background**: Light `#F5F5F7` / Dark `#0E0E11`
+- **Surface**: Solid `#FFFFFF` / Dark `#18181B` with 20px radii
+- **Frosted Glass**: `backdrop-blur-xl` on sidebar, top header, and mobile navigation bar
+- **Academic Taxonomy**:
+  - Exam: `#FF3B30` (Apple Red)
+  - Assignment: `#FF9500` (Apple Orange)
+  - Project: `#AF52DE` (Apple Purple)
+  - Personal: `#34C759` (Apple Green)
+
+---
+
+## 🛠️ Setup & Development
+
+### 1. Prerequisites
+- Node.js 18+ (tested on v24.21.0)
+- npm 9+
+
+### 2. Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
+cd personal
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment Variables
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
+Configure your Supabase credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+DATABASE_URL=postgresql://postgres:password@db.your-project.supabase.co:5432/postgres
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Running the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Type-Check and Linting
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── (dashboard)/
+│   │   ├── layout.tsx         # App shell layout (Sidebar, Header, MobileTabBar)
+│   │   ├── today/page.tsx     # Today dashboard
+│   │   ├── calendar/page.tsx  # Academic calendar & assessment schedule
+│   │   ├── projects/          # Deliverables & Kanban board
+│   │   └── history/page.tsx   # History & reflection log
+│   ├── globals.css            # Design system tokens & Tailwind imports
+│   └── layout.tsx             # Root layout with ThemeProvider & QueryProvider
+├── components/
+│   ├── ui/                    # Restyled shadcn/ui components (Button, Badge, Card, Dialog, Input, Avatar)
+│   ├── shell/                 # Sidebar, Header, MobileTabBar, ThemeToggle, QuickAddModal
+│   └── providers/             # ThemeProvider, QueryProvider
+├── lib/
+│   ├── db/
+│   │   ├── schema.ts          # Postgres Drizzle ORM schema
+│   │   └── index.ts           # Drizzle client configuration
+│   ├── supabase/              # Browser and server Supabase clients
+│   ├── mock-data.ts           # Realistic student seed data matching Stitch
+│   └── utils.ts               # cn class merge utility
+└── DESIGN.md                  # Comprehensive design system tokens
+```
