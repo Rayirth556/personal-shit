@@ -1,211 +1,223 @@
 "use client";
 
 import * as React from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  CartesianGrid,
-} from "recharts";
-import { Sparkles, Trophy, Clock, CheckCircle2, BookOpen } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { TIMETABLE_DAYS, ENROLLED_COURSES } from "@/lib/timetable-data";
+import { SEMESTER_5_DEADLINES } from "@/lib/runway-generator";
+import { useTasks } from "@/lib/task-store";
 
-const weeklyVelocityData = [
-  { week: "W1", focusHours: 18, tasks: 22 },
-  { week: "W2", focusHours: 24, tasks: 26 },
-  { week: "W3", focusHours: 20, tasks: 19 },
-  { week: "W4", focusHours: 28, tasks: 31 },
-  { week: "W5", focusHours: 26, tasks: 28 },
-  { week: "W6", focusHours: 29, tasks: 34 },
-];
+function minutesBetween(start: string, end: string): number {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  return Math.max(0, eh * 60 + em - (sh * 60 + sm));
+}
 
-const courseTimeData = [
-  { course: "Capstone", hours: 42, fill: "var(--primary)" },
-  { course: "DBMS", hours: 28, fill: "var(--secondary)" },
-  { course: "Theory Comp", hours: 26, fill: "var(--exam)" },
-  { course: "Architecture", hours: 24, fill: "var(--tertiary)" },
-  { course: "Discrete Math", hours: 22, fill: "var(--personal)" },
-];
+function formatHours(minutes: number): string {
+  const h = minutes / 60;
+  return Number.isInteger(h) ? `${h}h` : `${h.toFixed(1)}h`;
+}
+
+function daysUntil(dateString: string, todayIso: string): number {
+  const a = new Date(`${dateString}T00:00:00`);
+  const b = new Date(`${todayIso}T00:00:00`);
+  return Math.round((a.getTime() - b.getTime()) / 86_400_000);
+}
+
+/** Local calendar date as YYYY-MM-DD. toISOString() would roll back a day
+ *  for IST users between midnight and 05:30. */
+function localIsoDate(date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
 export default function InsightsPage() {
+  const { stats } = useTasks();
+  const [todayIso, setTodayIso] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setTodayIso(localIsoDate());
+  }, []);
+
+  // Real contact hours, summed across the five day orders from the timetable.
+  const courseLoad = React.useMemo(() => {
+    const byCourse = new Map<string, { name: string; minutes: number; sessions: number }>();
+
+    for (const day of TIMETABLE_DAYS) {
+      for (const cls of day.classes) {
+        const key = cls.courseCode || cls.courseName;
+        const entry = byCourse.get(key) ?? {
+          name: cls.courseName,
+          minutes: 0,
+          sessions: 0,
+        };
+        entry.minutes += minutesBetween(cls.startTime, cls.endTime);
+        entry.sessions += 1;
+        byCourse.set(key, entry);
+      }
+    }
+
+    return [...byCourse.entries()]
+      .map(([code, v]) => ({ code, ...v }))
+      .sort((a, b) => b.minutes - a.minutes);
+  }, []);
+
+  const totalMinutes = courseLoad.reduce((sum, c) => sum + c.minutes, 0);
+  const maxMinutes = courseLoad[0]?.minutes ?? 1;
+
+  const upcoming = React.useMemo(() => {
+    if (!todayIso) return [];
+    return SEMESTER_5_DEADLINES.map((d) => ({
+      ...d,
+      days: daysUntil(d.targetDate, todayIso),
+    }))
+      .filter((d) => d.days >= -1)
+      .sort((a, b) => a.days - b.days);
+  }, [todayIso]);
+
   return (
-    <div className="flex flex-col w-full gap-6">
+    <div className="flex flex-col w-full gap-8">
       {/* Header */}
-      <header className="flex flex-col gap-1">
-        <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[11px] font-bold uppercase tracking-wider">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
-          <span>Term Analytics &amp; Velocity</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
-          Academic Insights
+      <header>
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+          Semester 5
+        </p>
+        <h1 className="display text-[40px] sm:text-[48px] leading-[0.95] text-[var(--text-primary)]">
+          Insights
         </h1>
-        <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
-          Autumn Term 2024 • Weeks 1 to 6 focus distribution and cognitive load
+        <p className="mt-2 max-w-xl text-[13px] text-[var(--text-secondary)]">
+          Computed from your timetable and tracked tasks. Nothing here is estimated.
         </p>
       </header>
 
-      {/* Top 4 KPI Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Term GPA Pacing
-            </span>
-            <Trophy className="h-4 w-4 text-[var(--primary)]" />
+      {/* Real counters */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--border-subtle)]">
+        {[
+          { label: "Tracked", value: String(stats.total), note: "tasks total" },
+          { label: "Closed", value: String(stats.completed), note: "tasks done" },
+          { label: "Open", value: String(stats.remaining), note: "tasks left" },
+          { label: "Deadlines", value: String(upcoming.length), note: "still ahead" },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-[var(--bg-surface)] p-4">
+            <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[var(--text-tertiary)]">
+              {stat.label}
+            </p>
+            <p className="display tnum mt-1.5 text-[32px] leading-none text-[var(--text-primary)]">
+              {stat.value}
+            </p>
+            <p className="mt-1 text-[10.5px] text-[var(--text-tertiary)]">{stat.note}</p>
           </div>
-          <span className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            3.84
-          </span>
-          <span className="text-[11px] text-[var(--personal)] font-medium">
-            +0.12 vs Spring Term
-          </span>
-        </Card>
-
-        <Card className="p-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Total Deep Work
-            </span>
-            <Clock className="h-4 w-4 text-[var(--secondary)]" />
-          </div>
-          <span className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            147.5h
-          </span>
-          <span className="text-[11px] text-[var(--secondary)] font-medium">
-            Avg 24.5h / week
-          </span>
-        </Card>
-
-        <Card className="p-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Deliverables Closed
-            </span>
-            <CheckCircle2 className="h-4 w-4 text-[var(--exam)]" />
-          </div>
-          <span className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            160
-          </span>
-          <span className="text-[11px] text-[var(--text-secondary)]">
-            88% completion rate
-          </span>
-        </Card>
-
-        <Card className="p-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Lecture Attendance
-            </span>
-            <BookOpen className="h-4 w-4 text-[var(--personal)]" />
-          </div>
-          <span className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            94%
-          </span>
-          <span className="text-[11px] text-[var(--personal)] font-medium">
-            32 of 34 lectures
-          </span>
-        </Card>
+        ))}
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Weekly Focus & Velocity Line Chart (7 cols) */}
-        <Card className="lg:col-span-7 p-5 sm:p-6 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-[var(--text-primary)]">
-                Weekly Focus Volume &amp; Velocity
-              </h2>
-              <p className="text-xs text-[var(--text-secondary)]">
-                Recorded deep-work hours vs completed assignments
-              </p>
-            </div>
-            <Badge variant="default" className="text-[10px]">
-              Autumn Term
-            </Badge>
-          </div>
+      {/* Course load */}
+      <section className="rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5">
+        <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-2.5">
+          <h2 className="text-[15px] font-medium text-[var(--text-primary)]">
+            Contact hours
+          </h2>
+          <span className="tnum font-mono text-[10px] text-[var(--text-tertiary)]">
+            {formatHours(totalMinutes)}/wk · {TIMETABLE_DAYS.length} day orders
+          </span>
+        </div>
 
-          <div className="h-64 w-full pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={weeklyVelocityData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="week" stroke="var(--text-secondary)" fontSize={11} />
-                <YAxis stroke="var(--text-secondary)" fontSize={11} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--bg-surface)",
-                    borderColor: "var(--border-subtle)",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="focusHours"
-                  name="Focus Hours"
-                  stroke="var(--primary)"
-                  strokeWidth={2.5}
-                  dot={{ r: 4, fill: "var(--primary)" }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="tasks"
-                  name="Tasks Done"
-                  stroke="var(--secondary)"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: "var(--secondary)" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+        {courseLoad.length === 0 ? (
+          <p className="py-8 text-center text-[11px] text-[var(--text-tertiary)]">
+            No sessions in the timetable.
+          </p>
+        ) : (
+          <div className="mt-4 flex flex-col gap-3.5">
+            {courseLoad.map((course) => {
+              const enrolled = ENROLLED_COURSES.find((c) => c.code === course.code);
+              const width = Math.max(2, Math.round((course.minutes / maxMinutes) * 100));
 
-        {/* Course Time Allocation Bar Chart (5 cols) */}
-        <Card className="lg:col-span-5 p-5 sm:p-6 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-[var(--text-primary)]">
-                Focus by Course Module
-              </h2>
-              <p className="text-xs text-[var(--text-secondary)]">
-                Cumulative hours across term
-              </p>
-            </div>
-            <Sparkles className="h-4 w-4 text-[var(--primary)]" />
-          </div>
+              return (
+                <div key={course.code} className="flex items-center gap-3">
+                  <div className="w-44 shrink-0">
+                    <p className="flex items-center gap-1.5 truncate text-[12.5px] text-[var(--text-primary)]">
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: enrolled?.color ?? "var(--text-tertiary)" }}
+                      />
+                      <span className="truncate">{course.name}</span>
+                    </p>
+                    <p className="mt-0.5 truncate font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                      {course.code}
+                      {enrolled ? ` · ${enrolled.category}` : ""}
+                    </p>
+                  </div>
 
-          <div className="h-64 w-full pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={courseTimeData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.15} />
-                <XAxis type="number" stroke="var(--text-secondary)" fontSize={11} />
-                <YAxis
-                  type="category"
-                  dataKey="course"
-                  stroke="var(--text-secondary)"
-                  fontSize={11}
-                  width={80}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--bg-surface)",
-                    borderColor: "var(--border-subtle)",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="hours" name="Hours Logged" radius={[0, 8, 8, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+                  <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-[var(--bg-subdued)]">
+                    <div
+                      className="h-full rounded-full bg-[var(--text-primary)]"
+                      style={{ width: `${width}%` }}
+                    />
+                  </div>
+
+                  <span className="tnum w-20 shrink-0 text-right font-mono text-[10.5px] text-[var(--text-secondary)]">
+                    {formatHours(course.minutes)} · {course.sessions}x
+                  </span>
+                </div>
+              );
+            })}
           </div>
-        </Card>
-      </div>
+        )}
+      </section>
+
+      {/* Deadlines */}
+      <section className="rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5">
+        <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-2.5">
+          <h2 className="text-[15px] font-medium text-[var(--text-primary)]">
+            Deadlines ahead
+          </h2>
+          <span className="font-mono text-[10px] text-[var(--text-tertiary)]">
+            semester 5
+          </span>
+        </div>
+
+        {upcoming.length === 0 ? (
+          <p className="py-8 text-center text-[11px] text-[var(--text-tertiary)]">
+            Nothing scheduled ahead.
+          </p>
+        ) : (
+          <div className="mt-1 flex flex-col divide-y divide-[var(--border-subtle)]">
+            {upcoming.map((deadline) => (
+              <div
+                key={deadline.id}
+                className="flex items-center justify-between gap-3 py-2.5"
+              >
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: `var(--${deadline.category})` }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-[13px] text-[var(--text-primary)]">
+                      {deadline.title}
+                    </p>
+                    <p className="mt-0.5 truncate font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                      {deadline.courseCode} · {deadline.courseName}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="shrink-0 text-right">
+                  <p className="tnum font-mono text-[10.5px] text-[var(--text-secondary)]">
+                    {deadline.targetDate}
+                  </p>
+                  <p className="mt-0.5 font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                    {deadline.days < 0
+                      ? "past"
+                      : deadline.days === 0
+                        ? "today"
+                        : `in ${deadline.days}d`}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export function DeliverablesTracker({
   return (
     <section
       aria-label="Project Status and Milestone Tracker"
-      className="p-5 md:p-6 rounded-[20px] bg-[var(--bg-surface)] shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 flex flex-col gap-4 transition-all"
+      className="p-5 md:p-6 rounded-[var(--radius-card)] bg-[var(--bg-surface)] shadow-none border border-[var(--border-subtle)] flex flex-col gap-4 transition-all"
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Progress Ring & Title */}
@@ -66,7 +66,7 @@ export function DeliverablesTracker({
               <h2 className="text-base font-semibold text-[var(--text-primary)]">
                 Overall Deliverables
               </h2>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] uppercase tracking-wider">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] uppercase tracking-wider">
                 On Track
               </span>
             </div>
@@ -103,9 +103,9 @@ export function DeliverablesTracker({
 
       {/* Milestone Progress Bar */}
       <div className="flex flex-col gap-2 pt-1">
-        <div className="w-full h-2.5 rounded-full bg-[var(--bg-subdued)] overflow-hidden flex">
+        <div className="w-full h-2.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] overflow-hidden flex">
           <div
-            className="h-full bg-[var(--primary)] transition-all duration-700 ease-out rounded-full"
+            className="h-full bg-[var(--primary)] transition-all duration-700 ease-out rounded-[var(--radius-md)]"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -123,7 +123,7 @@ export function DeliverablesTracker({
           </div>
 
           <div className="text-center text-[var(--primary)] font-semibold flex items-center justify-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
             <span className="truncate">Navigation Stack</span>
           </div>
 

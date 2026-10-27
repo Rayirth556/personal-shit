@@ -16,9 +16,16 @@ interface CalendarHeaderProps {
   onTodayClick?: () => void;
 }
 
+const LEGEND = [
+  { label: "Exam", token: "--exam" },
+  { label: "Assign", token: "--assignment" },
+  { label: "Project", token: "--project" },
+  { label: "Study", token: "--personal" },
+];
+
 export function CalendarHeader({
-  currentMonth = "October 2024",
-  currentTerm = "Term 1",
+  currentMonth,
+  currentTerm,
   view,
   onViewChange,
   onNewEventClick,
@@ -27,32 +34,31 @@ export function CalendarHeader({
   onTodayClick,
 }: CalendarHeaderProps) {
   return (
-    <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-      {/* Month Title & Navigation */}
-      <div className="flex items-center gap-3 md:gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+    <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      {/* Month + navigation */}
+      <div className="flex items-end gap-3">
+        <div>
+          <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {currentTerm}
+          </p>
+          <h1 className="display text-[34px] leading-none text-[var(--text-primary)]">
             {currentMonth}
           </h1>
-          <span className="px-2 py-0.5 rounded-full bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] text-[11px] font-semibold">
-            {currentTerm}
-          </span>
         </div>
 
-        {/* Date Jump Controls */}
-        <div className="flex items-center gap-1 bg-[var(--bg-high)]/60 rounded-full p-1 shadow-sm border border-[var(--border-subtle)]/40">
+        <div className="mb-0.5 flex items-center gap-0.5">
           <button
             type="button"
             onClick={onPreviousMonth}
             aria-label="Previous month"
-            className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] hover:shadow-sm transition-all"
+            className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-subdued)] hover:text-[var(--text-primary)]"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={onTodayClick}
-            className="px-2.5 py-0.5 rounded-full text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface)] hover:shadow-sm transition-all"
+            className="rounded-[var(--radius-sm)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-subdued)] hover:text-[var(--text-primary)]"
           >
             Today
           </button>
@@ -60,27 +66,26 @@ export function CalendarHeader({
             type="button"
             onClick={onNextMonth}
             aria-label="Next month"
-            className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] hover:shadow-sm transition-all"
+            className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-subdued)] hover:text-[var(--text-primary)]"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* View Switcher, Category Indicators, and New Event Button */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Month / Week / Agenda Segmented Toggle */}
-        <div className="flex items-center p-1 bg-[var(--bg-high)]/60 rounded-full border border-[var(--border-subtle)]/40 shadow-inner">
+      {/* Views, legend, new event */}
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2.5">
           {(["month", "week", "agenda"] as const).map((v) => (
             <button
               key={v}
               type="button"
               onClick={() => onViewChange(v)}
               className={cn(
-                "px-3.5 py-1 rounded-full text-xs font-medium capitalize transition-all",
+                "font-mono text-[10px] uppercase tracking-[0.06em] transition-colors",
                 view === v
-                  ? "bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "text-[var(--text-primary)] underline decoration-1 underline-offset-4"
+                  : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
               )}
             >
               {v}
@@ -88,38 +93,30 @@ export function CalendarHeader({
           ))}
         </div>
 
-        {/* Category Legend Pills */}
-        <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-surface)] px-3 py-1.5 rounded-full shadow-sm border border-[var(--border-subtle)]/40 text-xs">
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--exam)]" />
-            <span>Exams</span>
-          </div>
-          <span className="text-[var(--border-subtle)]">•</span>
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--assignment)]" />
-            <span>Assign</span>
-          </div>
-          <span className="text-[var(--border-subtle)]">•</span>
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--project)]" />
-            <span>Projects</span>
-          </div>
-          <span className="text-[var(--border-subtle)]">•</span>
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
-            <span>Study</span>
-          </div>
+        <div className="hidden h-3 w-px bg-[var(--border-subtle)] sm:block" />
+
+        <div className="hidden items-center gap-3 sm:flex">
+          {LEGEND.map((item) => (
+            <div key={item.label} className="flex items-center gap-1.5">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: `var(${item.token})` }}
+              />
+              <span className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                {item.label}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {/* New Event Button */}
         <Button
           type="button"
           onClick={onNewEventClick}
           size="sm"
-          className="rounded-full shadow-[0_4px_14px_rgba(94,92,230,0.25)]"
+          className="ml-auto text-[11px] font-medium"
         >
-          <Plus className="h-4 w-4" />
-          <span>New Event</span>
+          <Plus className="h-3 w-3" />
+          <span>New event</span>
         </Button>
       </div>
     </section>

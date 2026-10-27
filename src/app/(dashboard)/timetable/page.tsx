@@ -86,13 +86,13 @@ export default function TimetablePage() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               The Campus Web
             </span>
-            <span className="w-1 h-1 rounded-full bg-[var(--border-subtle)]" />
+            <span className="w-1 h-1 rounded-[var(--radius-md)] bg-[var(--border-subtle)]" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">
               Batch 2
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-[-0.015em] text-[var(--text-primary)]">
             Academic Timetable
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
@@ -103,7 +103,7 @@ export default function TimetablePage() {
         {/* Legend & Controls */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Legend */}
-          <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-surface)] px-3 py-1.5 rounded-full shadow-xs border border-[var(--border-subtle)]/40 text-xs">
+          <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-surface)] px-3 py-1.5 rounded-[var(--radius-md)] shadow-xs border border-[var(--border-subtle)] text-xs">
             <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
               <span className="w-2.5 h-2.5 rounded-xs bg-amber-400 border border-amber-500/40" />
               <span>Theory</span>
@@ -121,12 +121,12 @@ export default function TimetablePage() {
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center p-1 bg-[var(--bg-high)]/60 rounded-full border border-[var(--border-subtle)]/40 shadow-inner">
+          <div className="flex items-center p-1 bg-[var(--bg-high)]/60 rounded-[var(--radius-md)] border border-[var(--border-subtle)] shadow-inner">
             <button
               type="button"
               onClick={() => setActiveView("matrix")}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                "px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all",
                 activeView === "matrix"
                   ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold shadow-xs"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -138,7 +138,7 @@ export default function TimetablePage() {
               type="button"
               onClick={() => setActiveView("day")}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                "px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all",
                 activeView === "day"
                   ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold shadow-xs"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -152,7 +152,7 @@ export default function TimetablePage() {
             variant="secondary"
             size="sm"
             onClick={handleExportJSON}
-            className="rounded-full shadow-xs text-xs"
+            className="rounded-[var(--radius-md)] shadow-xs text-xs"
           >
             <Download className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Export</span>
@@ -166,7 +166,7 @@ export default function TimetablePage() {
           <div className="overflow-x-auto pb-2">
             <div className="min-w-[1020px] flex flex-col">
               {/* Header Row: Slots */}
-              <div className="grid grid-cols-13 gap-1.5 pb-2 border-b border-[var(--border-subtle)]/60 text-center font-mono">
+              <div className="grid grid-cols-13 gap-1.5 pb-2 border-b border-[var(--border-subtle)] text-center font-mono">
                 <div className="text-[11px] font-bold text-[var(--text-secondary)] uppercase flex items-center justify-center p-2 bg-[var(--bg-subdued)] rounded-lg">
                   DAY
                 </div>
@@ -196,8 +196,8 @@ export default function TimetablePage() {
                       className="grid grid-cols-13 gap-1.5 items-stretch min-h-[82px]"
                     >
                       {/* Day Number Label */}
-                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-subdued)] font-bold text-sm text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]/40">
-                        <span className="text-base font-extrabold">{day.dayOrder}</span>
+                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-subdued)] font-bold text-sm text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]">
+                        <span className="text-base font-semibold">{day.dayOrder}</span>
                         <span className="text-[9px] font-semibold text-[var(--text-secondary)] uppercase">
                           DAY
                         </span>
@@ -240,13 +240,13 @@ export default function TimetablePage() {
                                   styling.border
                                 )}
                               >
-                                <span className="font-mono text-[9px] sm:text-[10px] tracking-tight truncate">
+                                <span className="font-mono text-[9px] sm:text-[10px] tracking-[-0.015em] truncate">
                                   {cls.room || "TBA"}
                                 </span>
                                 {span > 1 && (
                                   <span
                                     className={cn(
-                                      "uppercase text-[8px] sm:text-[9px] tracking-wider px-1.5 py-0.2 rounded-full shrink-0",
+                                      "uppercase text-[8px] sm:text-[9px] tracking-wider px-1.5 py-0.2 rounded-[var(--radius-md)] shrink-0",
                                       styling.badge
                                     )}
                                   >
@@ -262,7 +262,7 @@ export default function TimetablePage() {
                           return (
                             <div
                               key={slot.slotNumber}
-                              className="p-1 rounded-xl bg-[var(--bg-subdued)]/25 border border-dashed border-[var(--border-subtle)]/30 flex items-center justify-center"
+                              className="p-1 rounded-xl bg-[var(--bg-subdued)]/25 border border-dashed border-[var(--border-subtle)] flex items-center justify-center"
                             >
                               <span className="text-[10px] text-[var(--text-secondary)]/30 select-none">
                                 —
@@ -283,14 +283,14 @@ export default function TimetablePage() {
       ) : (
         /* DAY VIEW (Deep dive into single day) */
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 p-1 bg-[var(--bg-high)]/60 rounded-full border border-[var(--border-subtle)]/40 self-start">
+          <div className="flex items-center gap-2 p-1 bg-[var(--bg-high)]/60 rounded-[var(--radius-md)] border border-[var(--border-subtle)] self-start">
             {[1, 2, 3, 4, 5].map((d) => (
               <button
                 key={d}
                 type="button"
                 onClick={() => setSelectedDayOrder(d)}
                 className={cn(
-                  "px-3.5 py-1 rounded-full text-xs font-semibold transition-all",
+                  "px-3.5 py-1 rounded-[var(--radius-md)] text-xs font-semibold transition-all",
                   selectedDayOrder === d
                     ? "bg-[var(--bg-surface)] text-[var(--primary)] shadow-xs"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -317,12 +317,12 @@ export default function TimetablePage() {
                   >
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold tracking-tight">
+                        <span className="text-xs font-bold tracking-[-0.015em]">
                           {cls.startTime} – {cls.endTime}
                         </span>
                         <span
                           className={cn(
-                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full",
+                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-md)]",
                             styling.badge
                           )}
                         >
@@ -366,7 +366,7 @@ export default function TimetablePage() {
           <div className="w-full max-w-sm rounded-[24px] bg-[var(--bg-surface)] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.2)] border border-[var(--border-subtle)] flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] px-2 py-0.5 rounded-full bg-[var(--primary-fixed)]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] px-2 py-0.5 rounded-[var(--radius-md)] bg-[var(--primary-fixed)]">
                   {selectedClass.type}
                 </span>
                 <h3 className="text-lg font-bold text-[var(--text-primary)] mt-1.5">
@@ -381,7 +381,7 @@ export default function TimetablePage() {
               <button
                 type="button"
                 onClick={() => setSelectedClass(null)}
-                className="w-7 h-7 rounded-full bg-[var(--bg-subdued)] flex items-center justify-center text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="w-7 h-7 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] flex items-center justify-center text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               >
                 ✕
               </button>
@@ -410,7 +410,7 @@ export default function TimetablePage() {
 
             <Button
               size="sm"
-              className="w-full rounded-full"
+              className="w-full rounded-[var(--radius-md)]"
               onClick={() => setSelectedClass(null)}
             >
               Done
@@ -437,7 +437,7 @@ export default function TimetablePage() {
           {ENROLLED_COURSES.map((course) => (
             <Card
               key={course.code}
-              className="p-3.5 rounded-2xl flex flex-col justify-between gap-2 border border-[var(--border-subtle)]/40 hover:border-[var(--primary)]/40 transition-all"
+              className="p-3.5 rounded-2xl flex flex-col justify-between gap-2 border border-[var(--border-subtle)] hover:border-[var(--primary)]/40 transition-all"
             >
               <div>
                 <div className="flex items-center justify-between text-xs font-mono">

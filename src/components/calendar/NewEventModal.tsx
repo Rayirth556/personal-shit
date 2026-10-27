@@ -161,19 +161,19 @@ export function NewEventModal({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary-fixed)] text-[var(--primary)]">
+              <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--primary)]">
                 <Calendar className="h-4 w-4" />
               </div>
               <DialogTitle>New Event or Assessment</DialogTitle>
             </div>
 
             {/* Mode Switcher */}
-            <div className="flex items-center p-0.5 bg-[var(--bg-subdued)] rounded-full text-xs">
+            <div className="flex items-center p-0.5 bg-[var(--bg-subdued)] rounded-[var(--radius-md)] text-xs">
               <button
                 type="button"
                 onClick={() => setTab("manual")}
                 className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all",
+                  "px-2.5 py-0.5 rounded-[var(--radius-md)] text-[11px] font-medium transition-all",
                   tab === "manual" ? "bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-xs" : "text-[var(--text-secondary)]"
                 )}
               >
@@ -183,7 +183,7 @@ export function NewEventModal({
                 type="button"
                 onClick={() => setTab("paste")}
                 className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all flex items-center gap-1",
+                  "px-2.5 py-0.5 rounded-[var(--radius-md)] text-[11px] font-medium transition-all flex items-center gap-1",
                   tab === "paste" ? "bg-[var(--bg-surface)] text-[var(--primary)] shadow-xs font-semibold" : "text-[var(--text-secondary)]"
                 )}
               >
@@ -216,7 +216,7 @@ export function NewEventModal({
               type="button"
               onClick={handleApplyParsedNotice}
               disabled={!pastedNotice.trim()}
-              className="rounded-full gap-1.5 text-xs font-semibold"
+              className="rounded-[var(--radius-md)] gap-1.5 text-xs font-semibold"
             >
               <Sparkles className="h-3.5 w-3.5" />
               <span>Smart Extract &amp; Populate Form</span>
@@ -236,7 +236,7 @@ export function NewEventModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Discrete Math FT-IV Exam"
-                className="w-full h-10 px-4 rounded-full bg-[var(--bg-subdued)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all border border-transparent focus:border-[var(--border-subtle)]"
+                className="w-full h-10 px-4 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all border border-transparent focus:border-[var(--border-subtle)]"
               />
             </div>
 
@@ -281,7 +281,7 @@ export function NewEventModal({
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full h-10 px-3 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
                 />
               </div>
               <div>
@@ -293,14 +293,14 @@ export function NewEventModal({
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full h-10 px-2 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none"
+                    className="w-full h-10 px-2 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none"
                   />
                   <span className="text-xs text-[var(--text-secondary)]">–</span>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full h-10 px-2 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none"
+                    className="w-full h-10 px-2 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
               </div>
@@ -316,12 +316,12 @@ export function NewEventModal({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. CLS1020"
-                className="w-full h-10 px-4 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
+                className="w-full h-10 px-4 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
               />
             </div>
 
             {/* Auto Reverse Deadline Runway Checkbox */}
-            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[var(--bg-subdued)]/60 border border-[var(--border-subtle)]/40 text-xs cursor-pointer select-none">
+            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[var(--bg-subdued)]/60 border border-[var(--border-subtle)] text-xs cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={generateRunway}

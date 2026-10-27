@@ -17,17 +17,17 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-primary)]">
-      {/* Desktop Frosted Sidebar wrapped in Suspense */}
-      <React.Suspense fallback={<aside className="fixed left-0 top-0 hidden h-screen w-60 z-50 md:flex" />}>
+      {/* Desktop sidebar */}
+      <React.Suspense fallback={<aside className="fixed left-0 top-0 hidden h-screen w-56 z-50 md:flex" />}>
         <Sidebar onQuickAddOpen={() => setQuickAddOpen(true)} />
       </React.Suspense>
 
-      {/* Top Frosted Header */}
+      {/* Top bar */}
       <Header />
 
       {/* Main Content Area */}
-      <div className="pl-0 md:pl-60 min-h-screen flex flex-col pt-16 pb-20 md:pb-8">
-        <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 py-6">
+      <div className="pl-0 md:pl-56 min-h-screen flex flex-col pt-14 pb-20 md:pb-8">
+        <main className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-6 md:px-8 py-7">
           <React.Suspense fallback={<div className="p-8 text-center text-xs text-[var(--text-secondary)]">Loading...</div>}>
             {children}
           </React.Suspense>

@@ -74,19 +74,13 @@ export function GitHubProjectsCard({
   };
 
   return (
-    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[var(--shadow-card)] transition-all flex flex-col gap-4">
+    <section className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 shadow-none border border-[var(--border-subtle)] flex flex-col gap-3">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]/40">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-[var(--bg-subdued)] flex items-center justify-center text-[var(--text-primary)] shrink-0 shadow-xs border border-[var(--border-subtle)]/40">
-            <GitHubIcon className="h-4 w-4" />
-          </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">
-                GitHub Projects
-              </h3>
+      <div className="flex items-center justify-between pb-2.5 border-b border-[var(--border-subtle)]">
+        <div className="flex items-baseline gap-2 min-w-0">
+          <h3 className="text-[15px] font-medium text-[var(--text-primary)]">
+            Repositories
+          </h3>
               {isEditingUsername ? (
                 <form onSubmit={handleUsernameSubmit} className="inline-flex items-center gap-1">
                   <input
@@ -99,7 +93,7 @@ export function GitHubProjectsCard({
                   />
                   <button
                     type="submit"
-                    className="text-[10px] bg-[var(--primary)] text-white px-2 py-0.5 rounded-md font-semibold"
+                    className="text-[10px] bg-[var(--primary)] text-[var(--on-primary)] px-2 py-0.5 rounded-md font-semibold"
                   >
                     Save
                   </button>
@@ -119,17 +113,12 @@ export function GitHubProjectsCard({
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Open @${username} on GitHub`}
-                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-0.5 rounded hover:bg-[var(--bg-subdued)]"
+                    className="text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-primary)]"
                   >
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
               )}
-            </div>
-            <p className="text-[11px] text-[var(--text-secondary)]">
-              Sorted by latest commits &amp; pushes
-            </p>
-          </div>
         </div>
 
         <button
@@ -137,18 +126,18 @@ export function GitHubProjectsCard({
           onClick={handleRefresh}
           disabled={loading || isFetching}
           aria-label="Refresh GitHub commits"
-          className="p-1.5 rounded-full text-[var(--text-secondary)] hover:bg-[var(--bg-subdued)] hover:text-[var(--text-primary)] transition-colors"
+          className="p-1 text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-primary)]"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", (loading || isFetching) && "animate-spin")} />
         </button>
       </div>
 
       {/* Repositories List */}
-      <div className="flex flex-col divide-y divide-[var(--border-subtle)]/50">
+      <div className="flex flex-col divide-y divide-[var(--border-subtle)]">
         {loading && repos.length === 0 ? (
-          <div className="py-8 text-center text-xs text-[var(--text-secondary)] flex flex-col items-center gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin text-[var(--primary)]" />
-            <span>Fetching latest repositories and commits...</span>
+          <div className="flex flex-col items-center gap-2 py-8 text-center text-[11px] text-[var(--text-tertiary)]">
+            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            <span>Fetching repositories…</span>
           </div>
         ) : repos.length === 0 ? (
           <div className="py-6 px-2 text-center text-xs text-[var(--text-secondary)] flex flex-col items-center gap-2">
@@ -171,63 +160,61 @@ export function GitHubProjectsCard({
           repos.slice(0, 4).map((repo) => (
             <div
               key={repo.id}
-              className="py-3 flex flex-col gap-1.5 group hover:bg-[var(--bg-subdued)]/30 px-2 rounded-xl transition-colors -mx-2"
+              className="group flex flex-col gap-1 py-2.5 transition-colors hover:bg-[var(--bg-subdued)]/50"
             >
-              {/* Repo Name + Time Ago */}
-              <div className="flex items-center justify-between gap-2">
+              {/* Repo name + last push */}
+              <div className="flex items-baseline justify-between gap-2">
                 <a
                   href={repo.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-semibold text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors flex items-center gap-1.5 truncate"
+                  className="flex items-center gap-1 truncate font-mono text-[12px] text-[var(--text-primary)] transition-colors hover:text-[var(--secondary)]"
                 >
                   <span className="truncate">{repo.name}</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-70 transition-opacity shrink-0" />
+                  <ExternalLink className="h-2.5 w-2.5 shrink-0 text-[var(--text-tertiary)] opacity-0 transition-opacity group-hover:opacity-100" />
                 </a>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[11px] font-mono text-[var(--text-secondary)] bg-[var(--bg-subdued)] px-2 py-0.5 rounded-full">
-                    {repo.timeAgo}
-                  </span>
-                </div>
+                <span className="tnum shrink-0 font-mono text-[10px] text-[var(--text-tertiary)]">
+                  {repo.timeAgo}
+                </span>
               </div>
 
-              {/* Latest Commit Message & Hash */}
+              {/* Last commit */}
               {repo.latestCommit && (
-                <div className="flex items-start gap-1.5 text-xs text-[var(--text-secondary)] leading-relaxed bg-[var(--bg-subdued)]/50 p-2 rounded-lg border border-[var(--border-subtle)]/30">
-                  <GitCommit className="h-3.5 w-3.5 text-[var(--primary)] mt-0.5 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] text-[var(--text-primary)] font-medium truncate">
+                <div className="flex items-start gap-1.5">
+                  <GitCommit className="mt-[3px] h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[11px] leading-relaxed text-[var(--text-secondary)]">
                       {repo.latestCommit.message}
                     </p>
-                    <div className="flex items-center gap-2 mt-0.5 text-[10px] font-mono text-[var(--text-secondary)]">
-                      <span className="font-semibold text-[var(--primary)]">
-                        {repo.latestCommit.sha}
-                      </span>
-                      <span>•</span>
+                    <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[9.5px] text-[var(--text-tertiary)]">
+                      <span>{repo.latestCommit.sha}</span>
+                      <span>·</span>
                       <span className="flex items-center gap-0.5">
-                        <GitBranch className="h-2.5 w-2.5" />
+                        <GitBranch className="h-2 w-2" />
                         {repo.defaultBranch}
                       </span>
-                    </div>
+                    </p>
                   </div>
                 </div>
               )}
 
-              {/* Footer row: Language, Stars */}
-              <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)] pt-0.5">
+              {/* Language + stars */}
+              <div className="flex items-center justify-between pt-0.5 text-[10px] text-[var(--text-tertiary)]">
                 <div className="flex items-center gap-1.5">
                   <span
-                    className="w-2 h-2 rounded-full shrink-0"
+                    className="h-1.5 w-1.5 rounded-full shrink-0"
                     style={{ backgroundColor: repo.languageColor }}
                   />
-                  <span>{repo.language || "Code"}</span>
+                  <span className="font-mono uppercase tracking-[0.06em]">
+                    {repo.language || "Code"}
+                  </span>
                 </div>
 
                 {repo.stars > 0 && (
-                  <div className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)]">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    <span>{repo.stars}</span>
+                  <div className="flex items-center gap-1 font-mono">
+                    <Star className="h-2.5 w-2.5" />
+                    <span className="tnum">{repo.stars}</span>
                   </div>
                 )}
               </div>
@@ -241,7 +228,7 @@ export function GitHubProjectsCard({
         href={`https://github.com/${encodeURIComponent(username)}?tab=repositories`}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-center text-xs font-medium text-[var(--primary)] hover:underline flex items-center justify-center gap-1 pt-1 border-t border-[var(--border-subtle)]/40"
+        className="text-center text-xs font-medium text-[var(--primary)] hover:underline flex items-center justify-center gap-1 pt-1 border-t border-[var(--border-subtle)]"
       >
         <span>View all repositories on GitHub</span>
         <ExternalLink className="h-3 w-3" />

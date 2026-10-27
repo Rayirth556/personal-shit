@@ -61,8 +61,8 @@ export function MobileTabBar({ onQuickAddOpen }: MobileTabBarProps) {
   ];
 
   return (
-    <nav className="fixed bottom-3 left-3 right-3 z-50 md:hidden">
-      <div className="frosted-glass rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-[var(--border-subtle)]/50 px-2 py-1.5 flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] md:hidden">
+      <div className="flex items-stretch justify-around px-2">
         {items.map((item, index) => {
           const Icon = item.icon;
 
@@ -72,8 +72,8 @@ export function MobileTabBar({ onQuickAddOpen }: MobileTabBarProps) {
                 key={index}
                 type="button"
                 onClick={item.onClick}
-                aria-label="Quick Add Task"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)] text-white shadow-[0_2px_10px_rgba(94,92,230,0.35)] active:scale-95 transition-transform"
+                aria-label="Quick add task"
+                className="my-1.5 flex h-9 w-9 items-center justify-center self-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[var(--on-primary)] transition-colors hover:bg-[var(--primary-hover)]"
               >
                 <Icon className="h-4 w-4" />
               </button>
@@ -86,14 +86,14 @@ export function MobileTabBar({ onQuickAddOpen }: MobileTabBarProps) {
               href={item.href}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center justify-center py-1 px-2 rounded-full text-[10px] font-medium transition-colors",
+                "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 font-mono text-[9px] uppercase tracking-[0.06em] transition-colors",
                 item.isActive
-                  ? "text-[var(--primary)] font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "text-[var(--text-primary)]"
+                  : "text-[var(--text-tertiary)]"
               )}
             >
-              <Icon className="h-4 w-4" />
-              <span className="mt-0.5">{item.title}</span>
+              <Icon className={cn("h-4 w-4", item.isActive && "stroke-[2.25]")} />
+              <span>{item.title}</span>
             </Link>
           );
         })}

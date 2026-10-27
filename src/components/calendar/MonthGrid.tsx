@@ -180,7 +180,7 @@ export function MonthGrid({
             >
               <div className="flex items-center justify-between">
                 {day.isToday ? (
-                  <span className="w-6 h-6 rounded-full bg-[var(--primary)] text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                  <span className="w-6 h-6 rounded-[var(--radius-md)] bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center text-xs font-bold shadow-sm">
                     {day.dayNumber}
                   </span>
                 ) : (
@@ -205,7 +205,7 @@ export function MonthGrid({
                 )}
 
                 {day.hasExam && (
-                  <span className="w-2 h-2 rounded-full bg-[var(--exam)] shrink-0 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--exam)] shrink-0" />
                 )}
               </div>
 
@@ -216,7 +216,7 @@ export function MonthGrid({
                     <span
                       key={evt.id}
                       className={cn(
-                        "px-2 py-0.5 rounded-full text-[10px] font-medium truncate",
+                        "px-2 py-0.5 rounded-[var(--radius-md)] text-[10px] font-medium truncate",
                         getEventBadgeClass(evt.category)
                       )}
                     >

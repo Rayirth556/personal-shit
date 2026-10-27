@@ -5,9 +5,9 @@ import { TrendingUp } from "lucide-react";
 
 export function VelocitySparkline() {
   return (
-    <div className="mt-5 pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 bg-[var(--bg-subdued)]/60 rounded-xl px-4 py-3 border border-[var(--border-subtle)]/40">
+    <div className="mt-5 pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 bg-[var(--bg-subdued)]/60 rounded-xl px-4 py-3 border border-[var(--border-subtle)]">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-[var(--bg-surface)] flex items-center justify-center text-[var(--primary)] shadow-sm shrink-0">
+        <div className="w-9 h-9 rounded-[var(--radius-md)] bg-[var(--bg-surface)] flex items-center justify-center text-[var(--primary)] shadow-sm shrink-0">
           <TrendingUp className="h-4 w-4" />
         </div>
         <div>

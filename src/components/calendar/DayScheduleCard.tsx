@@ -39,7 +39,7 @@ const defaultItems: ScheduleItem[] = [
 
 export function DayScheduleCard({ selectedDay = 28 }: DayScheduleCardProps) {
   return (
-    <div className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 flex flex-col gap-3 transition-all">
+    <div className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 shadow-none border border-[var(--border-subtle)] flex flex-col gap-3 transition-all">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-[var(--text-primary)]">
           {selectedDay} Oct Schedule

@@ -26,14 +26,14 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
             <span>Projects</span>
           </Link>
           <span className="text-[var(--border-subtle)]">/</span>
-          <span className="flex items-center gap-1.5 text-[var(--text-primary)] font-semibold bg-[var(--bg-high)]/80 px-3 py-1 rounded-full">
+          <span className="flex items-center gap-1.5 text-[var(--text-primary)] font-semibold bg-[var(--bg-high)]/80 px-3 py-1 rounded-[var(--radius-md)]">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
             <span>{project.title}</span>
           </span>
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-secondary)] border border-[var(--border-subtle)]/40">
+          <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-secondary)] border border-[var(--border-subtle)]">
             <Clock className="h-3.5 w-3.5 text-[var(--primary)]" />
             <span>Updated 14m ago</span>
           </span>
@@ -41,7 +41,7 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
           <button
             type="button"
             aria-label="Project actions"
-            className="w-8 h-8 rounded-full bg-[var(--bg-surface)] shadow-xs hover:bg-[var(--bg-high)] transition-all flex items-center justify-center text-[var(--text-secondary)] border border-[var(--border-subtle)]/40"
+            className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--bg-surface)] shadow-xs hover:bg-[var(--bg-high)] transition-all flex items-center justify-center text-[var(--text-secondary)] border border-[var(--border-subtle)]"
           >
             <MoreHorizontal className="h-4 w-4" />
           </button>
@@ -50,7 +50,7 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
             type="button"
             onClick={onNewTaskClick}
             size="sm"
-            className="rounded-full shadow-[0_4px_14px_rgba(94,92,230,0.3)]"
+            className="rounded-[var(--radius-md)] shadow-[0_4px_14px_rgba(94,92,230,0.3)]"
           >
             <Plus className="h-4 w-4" />
             <span>New Task</span>
@@ -70,7 +70,7 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
             </Badge>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[var(--text-primary)] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[var(--text-primary)] tracking-[-0.015em]">
             {project.title}
           </h1>
 
@@ -82,8 +82,8 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
         {/* Right Badges */}
         <div className="flex flex-wrap items-center gap-2 self-start lg:self-end shrink-0">
           {/* Deadline */}
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)]/40">
-            <div className="w-2 h-2 rounded-full bg-[var(--exam)] animate-pulse" />
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-[var(--radius-md)] bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)]">
+            <div className="w-2 h-2 rounded-full bg-[var(--exam)]" />
             <div className="flex flex-col leading-tight">
               <span className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">
                 Deadline
@@ -98,8 +98,8 @@ export function ProjectHeader({ project, onNewTaskClick }: ProjectHeaderProps) {
           </div>
 
           {/* Advisor & Team */}
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)]/40">
-            <div className="w-7 h-7 rounded-full bg-[var(--bg-high)] flex items-center justify-center text-[var(--text-primary)] text-xs font-semibold">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-[var(--radius-md)] bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)]">
+            <div className="w-7 h-7 rounded-[var(--radius-md)] bg-[var(--bg-high)] flex items-center justify-center text-[var(--text-primary)] text-xs font-semibold">
               AT
             </div>
             <div className="flex flex-col leading-tight">

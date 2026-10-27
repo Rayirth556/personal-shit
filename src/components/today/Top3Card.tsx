@@ -9,7 +9,6 @@ import {
   GitBranch,
   Star,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/lib/task-store";
 
@@ -62,32 +61,29 @@ export function Top3Card({
   };
 
   return (
-    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 transition-all flex flex-col gap-3">
+    <section className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 sm:p-6 shadow-none border border-[var(--border-subtle)] transition-all flex flex-col gap-3">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]/40">
-        <div className="flex items-center gap-2.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[var(--primary)] ring-4 ring-[var(--primary)]/15" />
-          <div>
-            <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[var(--text-primary)]">
-              {viewAll ? "All Active Tasks" : "Top Priorities for Today"}
-            </h2>
-            <p className="text-xs text-[var(--text-secondary)]">
-              {stats.top3Remaining} remaining • {stats.completed} completed today
-            </p>
-          </div>
+      <div className="flex items-end justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
+        <div>
+          <h2 className="text-[15px] font-medium text-[var(--text-primary)]">
+            {viewAll ? "All active tasks" : "Top priorities"}
+          </h2>
+          <p className="mt-0.5 text-[11px] text-[var(--text-secondary)]">
+            {stats.top3Remaining} remaining · {stats.completed} done
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setViewAll(!viewAll)}
-            className="text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subdued)] px-3 py-1 rounded-full transition-colors"
+            className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
-            {viewAll ? "Show Top 3 Only" : `View All (${tasks.length})`}
+            {viewAll ? "Top 3 only" : `All (${tasks.length})`}
           </button>
 
-          <span className="text-xs font-semibold text-[var(--primary)] bg-[var(--primary-fixed)] px-2.5 py-0.5 rounded-full">
-            {stats.percentage}% done
+          <span className="tnum font-mono text-[11px] text-[var(--text-tertiary)]">
+            {stats.percentage}%
           </span>
         </div>
       </div>
@@ -112,53 +108,51 @@ export function Top3Card({
               >
                 {/* Left check + text */}
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  {/* Circular Checkbox */}
+                  {/* Square checkbox — a planner, not a to-do app */}
                   <button
                     type="button"
                     onClick={() => toggleTask(task.id)}
                     aria-label={`Mark "${task.title}" as ${isDone ? "incomplete" : "complete"}`}
                     className={cn(
-                      "mt-0.5 w-[22px] h-[22px] rounded-full flex items-center justify-center transition-all shrink-0 active:scale-90 cursor-pointer",
+                      "mt-[3px] flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[3px] border transition-colors cursor-pointer",
                       isDone
-                        ? "bg-[var(--primary)] text-white shadow-xs ring-1 ring-[var(--primary)]"
-                        : "bg-[var(--bg-subdued)] hover:bg-[var(--bg-high)] text-transparent hover:text-[var(--text-secondary)]/40 border border-[var(--border-subtle)]"
+                        ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--on-primary)]"
+                        : "border-[var(--text-tertiary)] bg-transparent text-transparent hover:border-[var(--text-primary)]"
                     )}
                   >
-                    <Check
-                      className={cn(
-                        "h-3.5 w-3.5 transition-transform stroke-[2.5]",
-                        isDone ? "scale-100" : "scale-75 opacity-0 group-hover:opacity-100"
-                      )}
-                    />
+                    <Check className="h-2.5 w-2.5 stroke-[3]" />
                   </button>
 
                   {/* Task Title & Metadata */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-baseline gap-2 flex-wrap">
                       <span
                         className={cn(
-                          "text-[14px] sm:text-[15px] font-medium leading-snug transition-all",
+                          "text-[14px] leading-snug transition-colors",
                           isDone
-                            ? "line-through text-[var(--text-secondary)] opacity-60"
+                            ? "line-through text-[var(--text-tertiary)]"
                             : "text-[var(--text-primary)]"
                         )}
                       >
                         {task.title}
                       </span>
 
-                      <Badge
-                        variant={task.category}
-                        className="text-[10px] px-2 py-0.2 capitalize shrink-0 font-medium"
-                      >
-                        {task.category}
-                      </Badge>
+                      <span className="inline-flex items-center gap-1 shrink-0">
+                        <span
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: `var(--${task.category})` }}
+                        />
+                        <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                          {task.category}
+                        </span>
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 mt-0.5 text-xs text-[var(--text-secondary)]">
+                    <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[var(--text-tertiary)]">
                       {task.category === "project" ? (
-                        <GitBranch className="h-3 w-3 shrink-0 opacity-70" />
+                        <GitBranch className="h-2.5 w-2.5 shrink-0" />
                       ) : (
-                        <Clock className="h-3 w-3 shrink-0 opacity-70" />
+                        <Clock className="h-2.5 w-2.5 shrink-0" />
                       )}
                       <span className="truncate">{task.dueLabel || task.subtitle}</span>
                     </div>
@@ -172,7 +166,7 @@ export function Top3Card({
                     onClick={() => toggleTopPriority(task.id)}
                     title={task.isTopPriorityToday ? "Remove from Top 3" : "Pin to Top 3"}
                     className={cn(
-                      "p-1.5 rounded-full hover:bg-[var(--bg-high)] transition-colors",
+                      "p-1.5 rounded-[var(--radius-md)] hover:bg-[var(--bg-high)] transition-colors",
                       task.isTopPriorityToday ? "text-amber-500 fill-amber-500" : "text-[var(--text-secondary)]"
                     )}
                   >
@@ -188,7 +182,7 @@ export function Top3Card({
                     type="button"
                     onClick={() => deleteTask(task.id)}
                     title="Delete task"
-                    className="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                    className="p-1.5 rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -201,7 +195,7 @@ export function Top3Card({
 
       {/* Inline Quick Add Task Field */}
       {showInput ? (
-        <form onSubmit={handleInlineAdd} className="mt-2 flex flex-col gap-2 pt-2 border-t border-[var(--border-subtle)]/40">
+        <form onSubmit={handleInlineAdd} className="mt-2 flex flex-col gap-2 pt-2 border-t border-[var(--border-subtle)]">
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -209,19 +203,19 @@ export function Top3Card({
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="What needs focus today? (e.g. Solve Discrete Math assignment problem 4)"
-              className="flex-1 h-9 px-3.5 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all border border-transparent focus:border-[var(--border-subtle)]"
+              className="flex-1 h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all border border-transparent focus:border-[var(--border-subtle)]"
             />
             <button
               type="submit"
               disabled={!newTitle.trim()}
-              className="px-3.5 h-9 rounded-full bg-[var(--primary)] text-white text-xs font-semibold shadow-xs disabled:opacity-40"
+              className="px-3.5 h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-[var(--on-primary)] text-xs font-semibold shadow-xs disabled:opacity-40"
             >
               Add
             </button>
             <button
               type="button"
               onClick={() => setShowInput(false)}
-              className="px-3 h-9 rounded-full text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-subdued)]"
+              className="px-3 h-9 rounded-[var(--radius-md)] text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-subdued)]"
             >
               Cancel
             </button>
@@ -235,9 +229,9 @@ export function Top3Card({
                 type="button"
                 onClick={() => setNewCategory(cat)}
                 className={cn(
-                  "px-2 py-0.5 rounded-full text-[10px] font-medium capitalize transition-all",
+                  "px-2 py-0.5 rounded-[var(--radius-md)] text-[10px] font-medium capitalize transition-all",
                   newCategory === cat
-                    ? "bg-[var(--primary)] text-white font-semibold"
+                    ? "bg-[var(--primary)] text-[var(--on-primary)] font-semibold"
                     : "bg-[var(--bg-subdued)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 )}
               >

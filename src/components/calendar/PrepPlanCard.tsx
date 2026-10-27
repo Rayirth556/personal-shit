@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, CheckCircle2, Circle, CalendarCheck } from "lucide-react";
+import { CheckCircle2, Circle, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -69,24 +69,19 @@ export function PrepPlanCard() {
   };
 
   return (
-    <div className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 flex flex-col gap-4 transition-all">
+    <div className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 shadow-none border border-[var(--border-subtle)] flex flex-col gap-4 transition-all">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[var(--primary-fixed)] flex items-center justify-center text-[var(--primary)] shrink-0">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="text-base font-semibold text-[var(--text-primary)]">
-            Suggested Prep Plan
-          </span>
-        </div>
-        <span className="text-[11px] font-semibold text-[var(--primary)] bg-[var(--primary-fixed)]/40 px-2.5 py-0.5 rounded-full">
-          AI Pace
+      <div className="flex items-baseline justify-between">
+        <span className="text-[15px] font-medium text-[var(--text-primary)]">
+          Prep plan
+        </span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+          {steps.length} sittings
         </span>
       </div>
 
-      <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-        Adaptive 5-stage sprint constructed from syllabus weight and past velocity to ensure prime retention.
+      <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+        Sittings spread over the days before the exam.
       </p>
 
       {/* Plan Timeline Checklist */}
@@ -150,7 +145,7 @@ export function PrepPlanCard() {
       <Button
         type="button"
         onClick={handleAddAll}
-        className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs font-medium shadow-sm"
+        className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-[var(--radius-md)] text-xs font-medium shadow-sm"
       >
         <CalendarCheck className="h-4 w-4" />
         <span>

@@ -9,7 +9,6 @@ import {
   Grid3X3,
   History,
   BarChart3,
-  CheckCircle2,
   Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,164 +17,124 @@ interface SidebarProps {
   onQuickAddOpen?: () => void;
 }
 
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      prefetch={true}
+      className={cn(
+        "group flex items-center gap-2.5 rounded-[var(--radius-sm)] px-2 py-1.5 text-[13px] transition-colors duration-100",
+        active
+          ? "bg-[var(--bg-subdued)] font-medium text-[var(--text-primary)]"
+          : "text-[var(--text-secondary)] hover:bg-[var(--bg-subdued)]/60 hover:text-[var(--text-primary)]"
+      )}
+    >
+      {Icon && (
+        <Icon
+          className={cn(
+            "h-3.5 w-3.5 shrink-0",
+            active ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"
+          )}
+        />
+      )}
+      <span className="truncate">{label}</span>
+    </Link>
+  );
+}
+
 export function Sidebar({ onQuickAddOpen }: SidebarProps) {
   const pathname = usePathname();
 
   const navItems = [
-    {
-      title: "Today",
-      href: "/today",
-      icon: CalendarDays,
-      isActive: pathname === "/" || pathname === "/today",
-    },
-    {
-      title: "Timetable",
-      href: "/timetable",
-      icon: Grid3X3,
-      isActive: pathname.startsWith("/timetable"),
-    },
-    {
-      title: "Calendar",
-      href: "/calendar",
-      icon: Calendar,
-      isActive: pathname.startsWith("/calendar"),
-    },
+    { title: "Today", href: "/today", icon: CalendarDays },
+    { title: "Timetable", href: "/timetable", icon: Grid3X3 },
+    { title: "Calendar", href: "/calendar", icon: Calendar },
   ];
 
   const projectItems = [
-    {
-      title: "Final-year project",
-      href: "/projects/final-year-project",
-      colorClass: "bg-[var(--primary)]",
-      isActive: pathname === "/projects/final-year-project",
-    },
-    {
-      title: "Portfolio website",
-      href: "/projects/portfolio-website",
-      colorClass: "bg-[var(--secondary)]",
-      isActive: pathname === "/projects/portfolio-website",
-    },
+    { title: "Final-year project", href: "/projects/final-year-project" },
+    { title: "Portfolio website", href: "/projects/portfolio-website" },
   ];
 
   const bottomNavItems = [
-    {
-      title: "History",
-      href: "/history",
-      icon: History,
-      isActive: pathname.startsWith("/history"),
-    },
-    {
-      title: "Insights",
-      href: "/insights",
-      icon: BarChart3,
-      isActive: pathname.startsWith("/insights"),
-    },
+    { title: "History", href: "/history", icon: History },
+    { title: "Insights", href: "/insights", icon: BarChart3 },
   ];
 
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
+
   return (
-    <aside className="fixed left-0 top-0 hidden h-screen w-60 z-50 flex-col justify-between frosted-glass border-r border-[var(--border-subtle)]/40 px-4 py-5 md:flex">
-      <div className="flex flex-col gap-6">
-        {/* Brand / Logo */}
-        <Link
-          href="/today"
-          className="flex items-center gap-2.5 px-1 py-0.5 group transition-transform active:scale-[0.98]"
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(94,92,230,0.3)] transition-transform group-hover:scale-105">
-            <CheckCircle2 className="h-[18px] w-[18px]" />
-          </div>
-          <span className="text-[22px] font-semibold tracking-tight text-[var(--text-primary)]">
+    <aside className="fixed left-0 top-0 z-50 hidden h-screen w-56 flex-col justify-between border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-4 md:flex">
+      <div className="flex flex-col gap-5">
+        {/* Wordmark */}
+        <Link href="/today" className="flex items-baseline gap-2 px-2 pt-1">
+          <span className="display text-[26px] leading-none text-[var(--text-primary)]">
             Plan
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+            sem 5
           </span>
         </Link>
 
-        {/* Navigation */}
-        <nav className="flex flex-col gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-all duration-150",
-                  item.isActive
-                    ? "bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(94,92,230,0.25)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-high)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.title}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex flex-col gap-0.5">
+          <span className="px-2 pb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+            Workspace
+          </span>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.title}
+              icon={item.icon}
+              active={isActive(item.href)}
+            />
+          ))}
 
-          {/* Projects Submenu */}
-          <div className="pt-3 pb-1 px-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
-              Projects
-            </span>
-          </div>
+          <span className="px-2 pb-1 pt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+            Projects
+          </span>
+          {projectItems.map((proj) => (
+            <NavLink
+              key={proj.href}
+              href={proj.href}
+              label={proj.title}
+              active={isActive(proj.href)}
+            />
+          ))}
 
-          <div className="flex flex-col gap-1 pl-1">
-            {projectItems.map((proj) => (
-              <Link
-                key={proj.href}
-                href={proj.href}
-                prefetch={true}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150",
-                  proj.isActive
-                    ? "bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(94,92,230,0.25)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-high)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full shrink-0",
-                    proj.isActive ? "bg-white" : proj.colorClass
-                  )}
-                />
-                <span className="truncate">{proj.title}</span>
-              </Link>
-            ))}
-          </div>
+          <div className="my-3 h-px bg-[var(--border-subtle)]" />
 
-          <div className="pt-2" />
-
-          {bottomNavItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-all duration-150",
-                  item.isActive
-                    ? "bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(94,92,230,0.25)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-high)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.title}</span>
-              </Link>
-            );
-          })}
+          {bottomNavItems.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.title}
+              icon={item.icon}
+              active={isActive(item.href)}
+            />
+          ))}
         </nav>
       </div>
 
-      {/* Quick Add Pill Button */}
-      <div className="pt-4">
-        <button
-          type="button"
-          onClick={onQuickAddOpen}
-          className="w-full flex items-center justify-center gap-1.5 py-2 px-4 rounded-full bg-[var(--primary)] text-white text-sm font-medium shadow-[0_4px_16px_rgba(94,92,230,0.25)] hover:opacity-95 active:scale-[0.97] transition-all"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Quick add</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onQuickAddOpen}
+        className="flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--primary)] px-3 py-2 text-[13px] font-medium text-[var(--on-primary)] transition-colors duration-100 hover:bg-[var(--primary-hover)]"
+      >
+        <Plus className="h-3.5 w-3.5" />
+        <span>New task</span>
+      </button>
     </aside>
   );
 }

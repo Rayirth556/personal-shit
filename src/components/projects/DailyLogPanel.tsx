@@ -143,12 +143,12 @@ export function DailyLogPanel() {
   return (
     <section
       aria-label="Daily Work Log"
-      className="p-5 md:p-6 rounded-[20px] bg-[var(--bg-surface)] shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 flex flex-col gap-5 transition-all"
+      className="p-5 md:p-6 rounded-[var(--radius-card)] bg-[var(--bg-surface)] shadow-none border border-[var(--border-subtle)] flex flex-col gap-5 transition-all"
     >
       {/* Panel Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]/40">
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[var(--primary-fixed)] flex items-center justify-center text-[var(--primary)] shrink-0">
+          <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--primary-fixed)] flex items-center justify-center text-[var(--primary)] shrink-0">
             <BookOpen className="h-4 w-4" />
           </div>
           <div>
@@ -162,13 +162,13 @@ export function DailyLogPanel() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="px-2.5 py-0.5 rounded-full bg-[var(--bg-high)] text-xs font-semibold text-[var(--text-primary)]">
+          <span className="px-2.5 py-0.5 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-xs font-semibold text-[var(--text-primary)]">
             {entries.length} Logs
           </span>
           <button
             type="button"
             aria-label="Filter logs"
-            className="p-1 rounded-full text-[var(--text-secondary)] hover:bg-[var(--bg-high)] transition-colors"
+            className="p-1 rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:bg-[var(--bg-high)] transition-colors"
           >
             <Calendar className="h-3.5 w-3.5" />
           </button>
@@ -176,10 +176,10 @@ export function DailyLogPanel() {
       </div>
 
       {/* Note Creation Form */}
-      <div className="p-4 rounded-2xl bg-[var(--bg-subdued)] flex flex-col gap-2.5 border border-[var(--border-subtle)]/30 focus-within:bg-[var(--bg-surface)] focus-within:shadow-[0_4px_16px_rgba(94,92,230,0.12)] transition-all">
+      <div className="p-4 rounded-2xl bg-[var(--bg-subdued)] flex flex-col gap-2.5 border border-[var(--border-subtle)] focus-within:bg-[var(--bg-surface)] focus-within:shadow-[0_4px_16px_rgba(94,92,230,0.12)] transition-all">
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
             <span>Today&apos;s Log — Thu, 22 Oct</span>
           </label>
 
@@ -190,7 +190,7 @@ export function DailyLogPanel() {
             size="sm"
             onClick={handleSyncLatestCommit}
             disabled={syncingGit}
-            className="h-6 px-2 text-[11px] font-mono text-[var(--primary)] hover:bg-[var(--primary-fixed)]/40 rounded-full gap-1"
+            className="h-6 px-2 text-[11px] font-mono text-[var(--primary)] hover:bg-[var(--primary-fixed)]/40 rounded-[var(--radius-md)] gap-1"
           >
             <GitCommit className="h-3 w-3" />
             <span>{syncingGit ? "Syncing..." : "Sync Latest Commit"}</span>
@@ -217,9 +217,9 @@ export function DailyLogPanel() {
               type="button"
               onClick={() => toggleTag(tag)}
               className={cn(
-                "px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors",
+                "px-2 py-0.5 rounded-[var(--radius-md)] text-[10px] font-medium transition-colors",
                 selectedTags.includes(tag)
-                  ? "bg-[var(--primary)] text-white"
+                  ? "bg-[var(--primary)] text-[var(--on-primary)]"
                   : "bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               )}
             >
@@ -229,7 +229,7 @@ export function DailyLogPanel() {
         </div>
 
         {/* Footer & Submit */}
-        <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]/40">
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
           <span className="text-[10px] text-[var(--text-secondary)]">
             Press ⌘cmd + Enter to save
           </span>
@@ -238,11 +238,11 @@ export function DailyLogPanel() {
             onClick={() => handleSave()}
             disabled={!logText.trim()}
             size="sm"
-            className="rounded-full text-xs font-medium px-4 h-7"
+            className="rounded-[var(--radius-md)] text-xs font-medium px-4 h-7"
           >
             {savedSuccess ? (
               <>
-                <CheckCircle2 className="h-3 w-3 text-white" />
+                <CheckCircle2 className="h-3 w-3 text-[var(--on-primary)]" />
                 <span>Saved ✓</span>
               </>
             ) : (
@@ -277,7 +277,7 @@ export function DailyLogPanel() {
                 <span className="text-xs font-semibold text-[var(--text-primary)]">
                   {entry.dateLabel}
                 </span>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--bg-subdued)] text-[var(--text-secondary)]">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-[var(--text-secondary)]">
                   {entry.hoursLogged}
                 </span>
               </div>
@@ -290,7 +290,7 @@ export function DailyLogPanel() {
                 {entry.tags.map((t) => (
                   <span
                     key={t}
-                    className="px-2 py-0.2 rounded-full bg-[var(--bg-subdued)] text-[10px] font-medium text-[var(--text-secondary)]"
+                    className="px-2 py-0.2 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-[10px] font-medium text-[var(--text-secondary)]"
                   >
                     {t}
                   </span>

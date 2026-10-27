@@ -51,7 +51,7 @@ function TaskCard({ task, isOverlay = false }: { task: Task; isOverlay?: boolean
   return (
     <article
       className={cn(
-        "group relative p-3.5 rounded-2xl bg-[var(--bg-surface)] shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all cursor-grab active:cursor-grabbing flex flex-col gap-2.5 border border-[var(--border-subtle)]/40",
+        "group relative p-3.5 rounded-2xl bg-[var(--bg-surface)] shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all cursor-grab active:cursor-grabbing flex flex-col gap-2.5 border border-[var(--border-subtle)]",
         isOverlay && "rotate-2 scale-105 shadow-[0_12px_28px_rgba(0,0,0,0.15)] ring-2 ring-[var(--primary)]",
         isDone && "opacity-85 hover:opacity-100"
       )}
@@ -105,9 +105,9 @@ function TaskCard({ task, isOverlay = false }: { task: Task; isOverlay?: boolean
               {task.subtasksCompleted} / {task.subtasksTotal} completed
             </span>
           </div>
-          <div className="w-full h-1.5 rounded-full bg-[var(--bg-subdued)] overflow-hidden">
+          <div className="w-full h-1.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] overflow-hidden">
             <div
-              className="h-full bg-[var(--secondary)] rounded-full transition-all"
+              className="h-full bg-[var(--secondary)] rounded-[var(--radius-md)] transition-all"
               style={{
                 width: `${((task.subtasksCompleted || 0) / task.subtasksTotal) * 100}%`,
               }}
@@ -117,12 +117,12 @@ function TaskCard({ task, isOverlay = false }: { task: Task; isOverlay?: boolean
       )}
 
       {/* Tags and Assignee Avatar */}
-      <div className="flex items-center justify-between pt-1 border-t border-[var(--border-subtle)]/30">
+      <div className="flex items-center justify-between pt-1 border-t border-[var(--border-subtle)]">
         <div className="flex items-center gap-1.5 flex-wrap">
           {task.tags?.map((t) => (
             <span
               key={t}
-              className="px-2 py-0.5 rounded-full bg-[var(--bg-subdued)] text-[10px] font-medium text-[var(--text-secondary)]"
+              className="px-2 py-0.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-[10px] font-medium text-[var(--text-secondary)]"
             >
               {t}
             </span>
@@ -130,7 +130,7 @@ function TaskCard({ task, isOverlay = false }: { task: Task; isOverlay?: boolean
         </div>
 
         {task.assigneeInitials && (
-          <div className="w-6 h-6 rounded-full bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] text-[10px] font-bold flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-6 h-6 rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)] text-[10px] font-bold flex items-center justify-center shrink-0 shadow-xs">
             {task.assigneeInitials}
           </div>
         )}
@@ -273,10 +273,10 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
         {/* Board Toolbar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
+            <h3 className="text-lg font-semibold tracking-[-0.015em] text-[var(--text-primary)]">
               Deliverables Board
             </h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)]">
+            <span className="px-2.5 py-0.5 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)]">
               Active Sprint 4
             </span>
           </div>
@@ -284,14 +284,14 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="px-3 py-1 rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)] border border-[var(--border-subtle)]/40 flex items-center gap-1.5 transition-colors shadow-xs"
+              className="px-3 py-1 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)] border border-[var(--border-subtle)] flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <Filter className="h-3.5 w-3.5" />
               <span>Filter</span>
             </button>
             <button
               type="button"
-              className="px-3 py-1 rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)] border border-[var(--border-subtle)]/40 flex items-center gap-1.5 transition-colors shadow-xs"
+              className="px-3 py-1 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-high)] text-xs font-medium text-[var(--text-secondary)] border border-[var(--border-subtle)] flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
               <span>Sort</span>
@@ -305,7 +305,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
           <DroppableColumn
             id="todo"
             aria-label="To Do Tasks"
-            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[20px] border border-[var(--border-subtle)]/30 min-h-[400px]"
+            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[var(--radius-card)] border border-[var(--border-subtle)] min-h-[400px]"
           >
             <div className="flex items-center justify-between px-1 py-0.5">
               <div className="flex items-center gap-2">
@@ -313,14 +313,14 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   To do
                 </h4>
-                <span className="px-2 py-0.2 rounded-full bg-[var(--bg-high)] text-[11px] font-semibold text-[var(--text-secondary)]">
+                <span className="px-2 py-0.2 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-[11px] font-semibold text-[var(--text-secondary)]">
                   {columns.todo.length}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => onAddTask?.("todo")}
-                className="p-1 rounded-full text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -332,7 +332,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
                   <SortableItem key={task.id} task={task} />
                 ))}
                 {columns.todo.length === 0 && (
-                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)]/40 rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
+                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)] rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
                     Drop tasks here
                   </div>
                 )}
@@ -342,7 +342,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
             <button
               type="button"
               onClick={() => onAddTask?.("todo")}
-              className="w-full py-2 rounded-xl bg-transparent hover:bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium transition-all flex items-center justify-center gap-1 border border-dashed border-[var(--border-subtle)]/60"
+              className="w-full py-2 rounded-xl bg-transparent hover:bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium transition-all flex items-center justify-center gap-1 border border-dashed border-[var(--border-subtle)]"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add deliverable</span>
@@ -353,22 +353,22 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
           <DroppableColumn
             id="doing"
             aria-label="In Progress Tasks"
-            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[20px] border border-[var(--border-subtle)]/30 min-h-[400px]"
+            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[var(--radius-card)] border border-[var(--border-subtle)] min-h-[400px]"
           >
             <div className="flex items-center justify-between px-1 py-0.5">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   Doing
                 </h4>
-                <span className="px-2 py-0.2 rounded-full bg-[var(--primary-fixed)] text-[11px] font-semibold text-[var(--on-primary-fixed)]">
+                <span className="px-2 py-0.2 rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[11px] font-semibold text-[var(--on-primary-fixed)]">
                   {columns.doing.length}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => onAddTask?.("doing")}
-                className="p-1 rounded-full text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -380,7 +380,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
                   <SortableItem key={task.id} task={task} />
                 ))}
                 {columns.doing.length === 0 && (
-                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)]/40 rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
+                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)] rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
                     Drop tasks here
                   </div>
                 )}
@@ -392,7 +392,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
           <DroppableColumn
             id="done"
             aria-label="Completed Tasks"
-            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[20px] border border-[var(--border-subtle)]/30 min-h-[400px]"
+            className="flex flex-col gap-3 bg-[var(--bg-subdued)]/60 p-3.5 rounded-[var(--radius-card)] border border-[var(--border-subtle)] min-h-[400px]"
           >
             <div className="flex items-center justify-between px-1 py-0.5">
               <div className="flex items-center gap-2">
@@ -400,7 +400,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   Done
                 </h4>
-                <span className="px-2 py-0.2 rounded-full bg-[var(--bg-high)] text-[11px] font-semibold text-[var(--text-secondary)]">
+                <span className="px-2 py-0.2 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-[11px] font-semibold text-[var(--text-secondary)]">
                   {columns.done.length}
                 </span>
               </div>
@@ -413,7 +413,7 @@ export function KanbanBoard({ initialTasks, onAddTask }: KanbanBoardProps) {
                   <SortableItem key={task.id} task={task} />
                 ))}
                 {columns.done.length === 0 && (
-                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)]/40 rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
+                  <div className="flex-1 min-h-[120px] flex items-center justify-center border-2 border-dashed border-[var(--border-subtle)] rounded-xl p-4 text-xs text-[var(--text-secondary)] select-none">
                     Drop tasks here
                   </div>
                 )}

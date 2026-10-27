@@ -115,7 +115,7 @@ export function QuickAddModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary-fixed)] text-[var(--primary)]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--primary)]">
               <Sparkles className="h-4 w-4" />
             </div>
             <DialogTitle>Quick Add</DialogTitle>
@@ -133,13 +133,13 @@ export function QuickAddModal({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="e.g. Finish Theory of Computation quiz tomorrow"
-              className="w-full h-11 px-4 rounded-full bg-[var(--bg-high)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all"
+              className="w-full h-11 px-4 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all"
             />
           </div>
 
           {/* Smart Parse Preview Chip */}
           {input.trim().length > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-subdued)] text-xs text-[var(--text-secondary)]">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] text-xs text-[var(--text-secondary)]">
               <Calendar className="h-3.5 w-3.5 text-[var(--primary)]" />
               <span>
                 Detected: <strong className="text-[var(--text-primary)] capitalize">{parsed.detectedCategory}</strong>
@@ -159,9 +159,9 @@ export function QuickAddModal({
                   setCategory(cat);
                   setIsManualCategory(true);
                 }}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                className={`px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all ${
                   activeCategory === cat
-                    ? "bg-[var(--primary)] text-white shadow-sm"
+                    ? "bg-[var(--primary)] text-[var(--on-primary)] shadow-sm"
                     : "bg-[var(--bg-high)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >

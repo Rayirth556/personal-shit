@@ -47,7 +47,7 @@ export function ViewOptionsModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary-fixed)] text-[var(--primary)]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--primary)]">
               <SlidersHorizontal className="h-4 w-4" />
             </div>
             <DialogTitle>View Options</DialogTitle>
@@ -90,7 +90,7 @@ export function ViewOptionsModal({
           </div>
 
           {/* Show Completed Tasks */}
-          <div className="flex items-center justify-between py-2 border-y border-[var(--border-subtle)]/60">
+          <div className="flex items-center justify-between py-2 border-y border-[var(--border-subtle)]">
             <div>
               <p className="text-sm font-medium text-[var(--text-primary)]">
                 Show Completed Priorities
@@ -102,12 +102,12 @@ export function ViewOptionsModal({
             <button
               type="button"
               onClick={() => setShowCompleted(!showCompleted)}
-              className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+              className={`w-11 h-6 flex items-center rounded-[var(--radius-md)] p-1 transition-colors ${
                 showCompleted ? "bg-[var(--primary)]" : "bg-[var(--bg-high)]"
               }`}
             >
               <div
-                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                className={`bg-white w-4 h-4 rounded-[var(--radius-md)] shadow-md transform transition-transform ${
                   showCompleted ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -132,7 +132,7 @@ export function ViewOptionsModal({
                     key={cat.id}
                     type="button"
                     onClick={() => toggleCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-md)] text-xs font-medium border transition-all ${
                       isSelected
                         ? "border-[var(--primary)]/40 bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm"
                         : "border-[var(--border-subtle)] text-[var(--text-secondary)] opacity-50"

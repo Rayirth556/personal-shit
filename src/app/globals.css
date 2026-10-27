@@ -2,134 +2,126 @@
 
 @layer base {
   :root {
-    /* Canvas & Surfaces */
-    --bg-canvas: #f5f5f7;
+    /* Canvas & Surfaces — warm paper, not cold zinc */
+    --bg-canvas: #f6f5f2;
     --bg-surface: #ffffff;
-    --bg-subdued: #f3f3f5;
-    --bg-high: #e8e8ea;
-    --bg-highest: #e2e2e4;
-    --bg-glass: rgba(255, 255, 255, 0.78);
-    --border-glass: rgba(255, 255, 255, 0.6);
-    --border-subtle: #e5e5ea;
-    --outline-variant: #c7c4d7;
+    --bg-subdued: #efeee9;
+    --bg-high: #e7e5df;
+    --bg-highest: #ddd9d1;
+    --bg-glass: rgba(255, 255, 255, 0.94);
+    --border-glass: transparent;
+    --border-subtle: #e2e0d8;
+    --outline-variant: #c9c6bb;
 
-    /* Text */
-    --text-primary: #1d1d1f;
-    --text-secondary: #6e6e73;
-    --text-tertiary: #8e8e93;
+    /* Text — ink on paper */
+    --text-primary: #17160f;
+    --text-secondary: #5f5e57;
+    --text-tertiary: #8b8a82;
 
-    /* Primary Accent (Electric Indigo) */
-    --primary: #5e5ce6;
-    --primary-hover: #4e4cc6;
-    --primary-container: #5e5ce6;
+    /* Primary = ink. Actions are near-black, not purple. */
+    --primary: #1b1b16;
+    --primary-hover: #2f2f28;
+    --primary-container: #1b1b16;
     --on-primary: #ffffff;
-    --primary-fixed: #e2dfff;
-    --on-primary-fixed: #0c006b;
+    --primary-fixed: #eceae2;
+    --on-primary-fixed: #17160f;
 
-    /* Secondary (System Blue) */
-    --secondary: #007aff;
-    --secondary-container: #0070eb;
-    --secondary-fixed: #d8e2ff;
-    --on-secondary-fixed: #001a41;
+    /* Secondary = the one accent: deep pine */
+    --secondary: #1f5340;
+    --secondary-container: #1f5340;
+    --secondary-fixed: #e4ebe4;
+    --on-secondary-fixed: #10251b;
 
-    /* Tertiary (Purple) */
-    --tertiary: #af52de;
-    --tertiary-fixed: #f6d9ff;
-    --on-tertiary-fixed: #310048;
+    /* Tertiary — muted ink blue, used sparingly */
+    --tertiary: #3d5a80;
+    --tertiary-fixed: #e6eaf0;
+    --on-tertiary-fixed: #16202e;
 
     /* Focus Ring */
-    --ring-focus: rgba(94, 92, 230, 0.25);
+    --ring-focus: rgba(27, 27, 22, 0.18);
 
-    /* Academic Taxonomy (Category Tokens) */
-    --exam: #ff3b30;
-    --exam-tint: rgba(255, 59, 48, 0.12);
-    --exam-text: #ff3b30;
+    /* Academic Taxonomy — desaturated, used as dots and rules only */
+    --exam: #a3341f;
+    --exam-tint: rgba(163, 52, 31, 0.09);
+    --exam-text: #8f2d1a;
 
-    --assignment: #ff9500;
-    --assignment-tint: rgba(255, 149, 0, 0.12);
-    --assignment-text: #ff9500;
+    --assignment: #8a6412;
+    --assignment-tint: rgba(138, 100, 18, 0.09);
+    --assignment-text: #7a5810;
 
-    --project: #af52de;
-    --project-tint: rgba(175, 82, 222, 0.12);
-    --project-text: #af52de;
+    --project: #3d5a80;
+    --project-tint: rgba(61, 90, 128, 0.09);
+    --project-text: #35506f;
 
-    --personal: #34c759;
-    --personal-tint: rgba(52, 199, 89, 0.12);
-    --personal-text: #34c759;
+    --personal: #2f6b4f;
+    --personal-tint: rgba(47, 107, 79, 0.09);
+    --personal-text: #295e45;
 
-    /* Corner Radii */
-    --radius-card: 20px;
-    --radius-pill: 9999px;
-    --radius-checkbox: 22px;
-    --radius-sm: 8px;
-    --radius-md: 12px;
+    /* Corner Radii — squared off. Pills are not a design system. */
+    --radius-card: 10px;
+    --radius-pill: 6px;
+    --radius-checkbox: 6px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
 
-    /* Shadows */
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
-    --shadow-floating: 0 12px 32px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 4px 16px rgba(94, 92, 230, 0.25);
+    /* Shadows — cards get a hairline, not elevation theater */
+    --shadow-card: none;
+    --shadow-floating: 0 12px 32px rgba(23, 22, 15, 0.10);
+    --shadow-glow: none;
   }
 
   .dark {
-    /* Canvas & Surfaces */
-    --bg-canvas: #0e0e11;
-    --bg-surface: #18181b;
-    --bg-subdued: #222226;
-    --bg-high: #2a2a2e;
-    --bg-highest: #323238;
-    --bg-glass: rgba(24, 24, 27, 0.78);
-    --border-glass: rgba(255, 255, 255, 0.08);
-    --border-subtle: #2e2e34;
-    --outline-variant: #454554;
+    --bg-canvas: #0e0e0d;
+    --bg-surface: #17171a;
+    --bg-subdued: #1d1d1f;
+    --bg-high: #26262a;
+    --bg-highest: #2e2e30;
+    --bg-glass: rgba(23, 23, 26, 0.94);
+    --border-glass: transparent;
+    --border-subtle: #2b2b2e;
+    --outline-variant: #3d3d42;
 
-    /* Text */
-    --text-primary: #f5f5f7;
-    --text-secondary: #a1a1a6;
-    --text-tertiary: #8e8e93;
+    --text-primary: #f2f1ec;
+    --text-secondary: #a3a29a;
+    --text-tertiary: #7c7b73;
 
-    /* Primary Accent (Bright Indigo) */
-    --primary: #7d7aff;
-    --primary-hover: #6d6aeb;
-    --primary-container: #5e5ce6;
-    --on-primary: #ffffff;
-    --primary-fixed: #2e2d5e;
-    --on-primary-fixed: #e2dfff;
+    --primary: #f2f1ec;
+    --primary-hover: #ffffff;
+    --primary-container: #f2f1ec;
+    --on-primary: #14140f;
+    --primary-fixed: #2a2a26;
+    --on-primary-fixed: #f2f1ec;
 
-    /* Secondary (System Blue Dark) */
-    --secondary: #0a84ff;
-    --secondary-container: #0070eb;
-    --secondary-fixed: #162c4e;
-    --on-secondary-fixed: #d8e2ff;
+    --secondary: #8fbfa4;
+    --secondary-container: #1f5340;
+    --secondary-fixed: #22322a;
+    --on-secondary-fixed: #d7e7dd;
 
-    /* Tertiary (Purple Dark) */
-    --tertiary: #bf5af2;
-    --tertiary-fixed: #411e54;
-    --on-tertiary-fixed: #f6d9ff;
+    --tertiary: #8ba8cc;
+    --tertiary-fixed: #232b36;
+    --on-tertiary-fixed: #dfe7f0;
 
-    /* Focus Ring */
-    --ring-focus: rgba(125, 122, 255, 0.35);
+    --ring-focus: rgba(242, 241, 236, 0.22);
 
-    /* Academic Taxonomy (Category Tokens) */
-    --exam: #ff453a;
-    --exam-tint: rgba(255, 69, 58, 0.18);
-    --exam-text: #ff453a;
+    --exam: #d4785f;
+    --exam-tint: rgba(212, 120, 95, 0.13);
+    --exam-text: #e09076;
 
-    --assignment: #ff9f0a;
-    --assignment-tint: rgba(255, 159, 10, 0.18);
-    --assignment-text: #ff9f0a;
+    --assignment: #c9a04a;
+    --assignment-tint: rgba(201, 160, 74, 0.13);
+    --assignment-text: #d8b264;
 
-    --project: #bf5af2;
-    --project-tint: rgba(191, 90, 242, 0.18);
-    --project-text: #bf5af2;
+    --project: #86a3c6;
+    --project-tint: rgba(134, 163, 198, 0.13);
+    --project-text: #9db6d4;
 
-    --personal: #30d158;
-    --personal-tint: rgba(48, 209, 88, 0.18);
-    --personal-text: #30d158;
+    --personal: #7fb99a;
+    --personal-tint: rgba(127, 185, 154, 0.13);
+    --personal-text: #92c8ab;
 
-    /* Shadows */
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25);
-    --shadow-floating: 0 12px 32px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 4px 16px rgba(125, 122, 255, 0.3);
+    --shadow-card: none;
+    --shadow-floating: 0 16px 40px rgba(0, 0, 0, 0.55);
+    --shadow-glow: none;
   }
 }
 
@@ -180,24 +172,41 @@
   --color-personal-tint: var(--personal-tint);
   --color-personal-text: var(--personal-text);
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, sans-serif;
+  --font-sans: var(--font-instrument-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 body {
   background-color: var(--bg-canvas);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, sans-serif;
+  font-family: var(--font-instrument-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv05" 1, "ss01" 1;
 }
 
-/* Custom frosted glass utility */
+/* Numbers line up. Hand-built interfaces do this. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Editorial display face for hero numerals and dates */
+.display {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Solid panel: kept the class name so existing call sites keep working,
+   but the frosted-glass treatment is gone. */
 .frosted-glass {
-  background-color: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: var(--bg-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Hide scrollbars cleanly */
@@ -206,4 +215,10 @@ body {
 }
 * {
   scrollbar-width: none;
+}
+
+/* One focus treatment, everywhere */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

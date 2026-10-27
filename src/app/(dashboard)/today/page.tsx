@@ -13,6 +13,7 @@ import { WeeklyProgressCard } from "@/components/today/WeeklyProgressCard";
 import { GitHubProjectsCard } from "@/components/today/GitHubProjectsCard";
 import { ViewOptionsModal } from "@/components/today/ViewOptionsModal";
 import { GIRLFRIEND_TIME_BLOCK } from "@/lib/timetable-data";
+import { mockProfile } from "@/lib/mock-data";
 import { useTasks } from "@/lib/task-store";
 
 function formatTime12h(time: string): string {
@@ -56,27 +57,31 @@ export default function TodayPage() {
   return (
     <div className="flex flex-col w-full gap-7">
       {/* Hero Header Section */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-2 border-b border-[var(--border-subtle)]/30">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-2 border-b border-[var(--border-subtle)]">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {mockProfile.currentTerm}
+          </p>
+          <h1 className="display text-[40px] sm:text-[52px] leading-[0.92] text-[var(--text-primary)]">
             {todayLabel ?? "\u00A0"}
           </h1>
 
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
-            {stats.top3Remaining} of 3 priorities open • {girlfriendWindow} reserved for{" "}
-            {GIRLFRIEND_TIME_BLOCK.title.toLowerCase()}
+          <p className="mt-2.5 text-[13px] text-[var(--text-secondary)]">
+            {stats.top3Remaining} of 3 priorities open
+            <span className="mx-1.5 text-[var(--text-tertiary)]">·</span>
+            {girlfriendWindow} held for {GIRLFRIEND_TIME_BLOCK.title.toLowerCase()}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start md:self-end flex-wrap">
+        <div className="flex items-center gap-2 self-start md:self-end flex-wrap">
           <Button
             type="button"
             size="sm"
             onClick={() => setKickoffOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold rounded-full shadow-[var(--shadow-glow)]"
+            className="flex items-center gap-1.5 text-xs font-medium"
           >
             <Sun className="h-3.5 w-3.5" />
-            <span>Morning Kickoff</span>
+            <span>Morning kickoff</span>
           </Button>
 
           <Button
@@ -84,10 +89,10 @@ export default function TodayPage() {
             variant="secondary"
             size="sm"
             onClick={() => setViewOptionsOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subdued)] border border-[var(--border-subtle)]/60 rounded-full"
+            className="flex items-center gap-1.5 text-xs font-medium"
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
-            <span>Customize</span>
+            <span>Display</span>
           </Button>
         </div>
       </header>
@@ -106,18 +111,11 @@ export default function TodayPage() {
           {/* 2. Reverse Deadline Runway (Staged Milestones) */}
           <DeadlineRunwayCard />
 
-          {/* 3. Today's Class Schedule (Sunsama-Style Proportional Timetable) */}
+          {/* 3. Today's Class Schedule */}
           <ScheduleTimeline initialDayOrder={1} />
-
-          {/* 4. Daily Reflection Journal Note */}
-          <CheckInCard
-            onReflect={(reflection) => {
-              console.log("Journal reflection recorded:", reflection);
-            }}
-          />
         </div>
 
-        {/* RIGHT UTILITY & DEVELOPER COLUMN (4 cols) */}
+        {/* RIGHT COLUMN */}
         <aside className="lg:col-span-4 flex flex-col gap-6">
           {/* 1. Live GitHub Projects & Latest Commits */}
           <GitHubProjectsCard initialUsername="Rayirth556" />
@@ -125,10 +123,17 @@ export default function TodayPage() {
           {/* 2. Coming Up Deadlines (Exams & Assignments) */}
           <ComingUpCard />
 
-          {/* 3. Weekly Progress Ring */}
+          {/* 3. Throughput */}
           <WeeklyProgressCard
             completedTasks={stats.completed}
             totalTasks={stats.total}
+          />
+
+          {/* 4. Reflection */}
+          <CheckInCard
+            onReflect={(reflection) => {
+              console.log("Journal reflection recorded:", reflection);
+            }}
           />
         </aside>
       </div>

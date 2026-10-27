@@ -39,12 +39,12 @@ export default function HistoryPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
         <MindfulCadenceCard />
 
-        <div className="bg-[var(--bg-surface)] rounded-[20px] p-5 sm:p-6 flex flex-col justify-between shadow-[var(--shadow-card)]">
+        <div className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 sm:p-6 flex flex-col justify-between shadow-[var(--shadow-card)]">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               Logged in this view
             </span>
-            <p className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] mt-2">
+            <p className="text-2xl sm:text-3xl font-bold tracking-[-0.015em] text-[var(--text-primary)] mt-2">
               {days.length} {days.length === 1 ? "day" : "days"}
             </p>
             <p className="text-xs text-[var(--text-secondary)] mt-1">
@@ -52,7 +52,7 @@ export default function HistoryPage() {
             </p>
           </div>
 
-          <p className="text-xs text-[var(--text-secondary)] pt-5 border-t border-[var(--border-subtle)]/40 mt-4">
+          <p className="text-xs text-[var(--text-secondary)] pt-5 border-t border-[var(--border-subtle)] mt-4">
             Reflections are stored per day below.
           </p>
         </div>
@@ -63,10 +63,10 @@ export default function HistoryPage() {
         {/* Section Header */}
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+            <h2 className="text-xl font-bold tracking-[-0.015em] text-[var(--text-primary)]">
               Recent days
             </h2>
-            <span className="px-3 py-0.5 rounded-full bg-[var(--bg-high)] text-xs font-semibold text-[var(--text-secondary)]">
+            <span className="px-3 py-0.5 rounded-[var(--radius-md)] bg-[var(--bg-high)] text-xs font-semibold text-[var(--text-secondary)]">
               {days.length} logged
             </span>
           </div>

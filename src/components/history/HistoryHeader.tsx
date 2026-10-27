@@ -25,7 +25,7 @@ export function HistoryHeader({
           <span>Academic Logbook &amp; Archive</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-[-0.015em] text-[var(--text-primary)]">
           History &amp; Reflection
         </h1>
 
@@ -40,7 +40,7 @@ export function HistoryHeader({
 
       {/* Filter Range Pills & Export */}
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="p-1 rounded-full bg-[var(--bg-high)]/60 border border-[var(--border-subtle)]/40 flex items-center shadow-inner">
+        <div className="p-1 rounded-[var(--radius-md)] bg-[var(--bg-high)]/60 border border-[var(--border-subtle)] flex items-center shadow-inner">
           {[
             { id: "30d", label: "Last 30 Days" },
             { id: "term", label: "Autumn Term 2024" },
@@ -51,7 +51,7 @@ export function HistoryHeader({
               type="button"
               onClick={() => onRangeChange(item.id as "30d" | "term" | "all")}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                "px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all",
                 range === item.id
                   ? "bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-xs font-semibold"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -67,7 +67,7 @@ export function HistoryHeader({
           variant="secondary"
           size="sm"
           onClick={onExport}
-          className="rounded-full flex items-center gap-1.5 text-xs font-medium text-[var(--secondary)] shadow-xs"
+          className="rounded-[var(--radius-md)] flex items-center gap-1.5 text-xs font-medium text-[var(--secondary)] shadow-xs"
         >
           <Download className="h-3.5 w-3.5" />
           <span>Export Journal</span>

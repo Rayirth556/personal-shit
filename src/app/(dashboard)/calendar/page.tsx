@@ -63,7 +63,7 @@ export default function CalendarPage() {
       {/* Main Workspace: Calendar Grid + Inspector Panel */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         {/* Main Calendar Grid Column (xl:col-span-8) */}
-        <div className="xl:col-span-8 flex flex-col bg-[var(--bg-surface)] rounded-[20px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 transition-all">
+        <div className="xl:col-span-8 flex flex-col bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-4 sm:p-6 shadow-none border border-[var(--border-subtle)] transition-all">
           {view === "month" && (
             <MonthGrid
               year={currentDate.getFullYear()}
@@ -134,7 +134,7 @@ export default function CalendarPage() {
                       {item.title}
                     </span>
                   </div>
-                  <span className="text-[11px] font-mono text-[var(--text-secondary)] shrink-0 bg-[var(--bg-surface)] px-2.5 py-0.5 rounded-full border border-[var(--border-subtle)]/40 shadow-xs">
+                  <span className="text-[11px] font-mono text-[var(--text-secondary)] shrink-0 bg-[var(--bg-surface)] px-2.5 py-0.5 rounded-[var(--radius-md)] border border-[var(--border-subtle)] shadow-xs">
                     {item.date}
                   </span>
                 </div>

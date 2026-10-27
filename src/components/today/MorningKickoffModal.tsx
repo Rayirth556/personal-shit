@@ -80,7 +80,7 @@ export function MorningKickoffModal({
         <DialogHeader>
           <div className="flex items-center justify-between pb-1">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-amber-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-amber-500/15 text-amber-600">
                 <Sun className="h-4.5 w-4.5" />
               </div>
               <div>
@@ -94,16 +94,16 @@ export function MorningKickoffModal({
             </div>
 
             {/* Step Pills */}
-            <div className="flex items-center gap-1.5 bg-[var(--bg-subdued)] p-1 rounded-full text-xs">
+            <div className="flex items-center gap-1.5 bg-[var(--bg-subdued)] p-1 rounded-[var(--radius-md)] text-xs">
               {[1, 2, 3].map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setStep(s as 1 | 2 | 3)}
                   className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all",
+                    "w-6 h-6 rounded-[var(--radius-md)] flex items-center justify-center text-[11px] font-bold transition-all",
                     step === s
-                      ? "bg-[var(--primary)] text-white shadow-xs"
+                      ? "bg-[var(--primary)] text-[var(--on-primary)] shadow-xs"
                       : "text-[var(--text-secondary)] hover:bg-[var(--bg-high)]"
                   )}
                 >
@@ -142,9 +142,9 @@ export function MorningKickoffModal({
                         type="button"
                         onClick={() => toggleTask(t.id)}
                         className={cn(
-                          "w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors",
+                          "w-5 h-5 rounded-[var(--radius-md)] border flex items-center justify-center shrink-0 transition-colors",
                           isDone
-                            ? "bg-[var(--primary)] border-[var(--primary)] text-white"
+                            ? "bg-[var(--primary)] border-[var(--primary)] text-[var(--on-primary)]"
                             : "border-[var(--border-subtle)] text-transparent"
                         )}
                       >
@@ -176,7 +176,7 @@ export function MorningKickoffModal({
             <div className="flex justify-end pt-2">
               <Button
                 onClick={() => setStep(2)}
-                className="rounded-full gap-1.5 text-xs font-semibold"
+                className="rounded-[var(--radius-md)] gap-1.5 text-xs font-semibold"
               >
                 <span>Check Horizon</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -192,14 +192,14 @@ export function MorningKickoffModal({
             <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex flex-col gap-1.5 shadow-xs">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-[var(--radius-md)] bg-rose-500 text-[var(--on-primary)] flex items-center justify-center">
                     <Heart className="h-3.5 w-3.5 fill-white" />
                   </div>
                   <span className="text-sm font-bold text-rose-950 dark:text-rose-100">
                     {GIRLFRIEND_TIME_BLOCK.title} • 4:00 PM – 7:00 PM
                   </span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-[var(--radius-md)] bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase tracking-wider">
                   Sacred Personal Block
                 </span>
               </div>
@@ -218,7 +218,7 @@ export function MorningKickoffModal({
                 {todaySchedule.classes.map((cls) => (
                   <div
                     key={cls.id}
-                    className="p-2.5 rounded-xl bg-[var(--bg-subdued)] border border-[var(--border-subtle)]/60 flex items-center justify-between text-xs"
+                    className="p-2.5 rounded-xl bg-[var(--bg-subdued)] border border-[var(--border-subtle)] flex items-center justify-between text-xs"
                   >
                     <div>
                       <p className="font-semibold text-[var(--text-primary)] truncate max-w-[170px]">
@@ -237,7 +237,7 @@ export function MorningKickoffModal({
             </div>
 
             {/* Upcoming Deadlines Radar */}
-            <div className="p-3 rounded-xl bg-[var(--bg-subdued)]/60 border border-[var(--border-subtle)]/40 flex items-center justify-between text-xs">
+            <div className="p-3 rounded-xl bg-[var(--bg-subdued)]/60 border border-[var(--border-subtle)] flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-[var(--primary)]" />
                 <span className="font-medium text-[var(--text-primary)]">
@@ -253,14 +253,14 @@ export function MorningKickoffModal({
               <Button
                 variant="subtle"
                 onClick={() => setStep(1)}
-                className="rounded-full gap-1.5 text-xs"
+                className="rounded-[var(--radius-md)] gap-1.5 text-xs"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>Back</span>
               </Button>
               <Button
                 onClick={() => setStep(3)}
-                className="rounded-full gap-1.5 text-xs font-semibold"
+                className="rounded-[var(--radius-md)] gap-1.5 text-xs font-semibold"
               >
                 <span>Select Top 3</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -282,7 +282,7 @@ export function MorningKickoffModal({
                 </p>
               </div>
 
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)]">
+              <span className="text-xs font-bold px-2.5 py-1 rounded-[var(--radius-md)] bg-[var(--primary-fixed)] text-[var(--on-primary-fixed)]">
                 {selectedTop3.length === 3 ? "Optimal Focus Reached" : `${3 - selectedTop3.length} remaining`}
               </span>
             </div>
@@ -306,9 +306,9 @@ export function MorningKickoffModal({
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div
                         className={cn(
-                          "w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors",
+                          "w-5 h-5 rounded-[var(--radius-md)] border flex items-center justify-center shrink-0 transition-colors",
                           isSelected
-                            ? "bg-[var(--primary)] border-[var(--primary)] text-white"
+                            ? "bg-[var(--primary)] border-[var(--primary)] text-[var(--on-primary)]"
                             : "border-[var(--border-subtle)] bg-[var(--bg-surface)]"
                         )}
                       >
@@ -333,11 +333,11 @@ export function MorningKickoffModal({
               })}
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]/40">
+            <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
               <Button
                 variant="subtle"
                 onClick={() => setStep(2)}
-                className="rounded-full gap-1.5 text-xs"
+                className="rounded-[var(--radius-md)] gap-1.5 text-xs"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>Back</span>
@@ -345,7 +345,7 @@ export function MorningKickoffModal({
 
               <Button
                 onClick={handleFinish}
-                className="rounded-full gap-2 text-xs font-semibold px-5 shadow-[0_4px_16px_rgba(94,92,230,0.3)]"
+                className="rounded-[var(--radius-md)] gap-2 text-xs font-semibold px-5 shadow-[0_4px_16px_rgba(94,92,230,0.3)]"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Start Calm &amp; Focused Day</span>
