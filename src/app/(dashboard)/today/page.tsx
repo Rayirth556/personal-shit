@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Sparkles, Sun } from "lucide-react";
+import { SlidersHorizontal, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Top3Card } from "@/components/today/Top3Card";
 import { DeadlineRunwayCard } from "@/components/today/DeadlineRunwayCard";
@@ -10,11 +10,17 @@ import { ScheduleTimeline } from "@/components/today/ScheduleTimeline";
 import { CheckInCard } from "@/components/today/CheckInCard";
 import { ComingUpCard } from "@/components/today/ComingUpCard";
 import { WeeklyProgressCard } from "@/components/today/WeeklyProgressCard";
-import { StudyHeatmapCard } from "@/components/today/StudyHeatmapCard";
 import { GitHubProjectsCard } from "@/components/today/GitHubProjectsCard";
 import { ViewOptionsModal } from "@/components/today/ViewOptionsModal";
-import { mockProfile } from "@/lib/mock-data";
+import { GIRLFRIEND_TIME_BLOCK } from "@/lib/timetable-data";
 import { useTasks } from "@/lib/task-store";
+
+function formatTime12h(time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${hour12} ${suffix}` : `${hour12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
 
 export default function TodayPage() {
   const { stats } = useTasks();
@@ -29,61 +35,36 @@ export default function TodayPage() {
     "project",
     "personal",
   ]);
-  const [rolloverNotice, setRolloverNotice] = React.useState<string | null>(
-    "1 unfinished task from yesterday was rolled over into today"
-  );
+
+  // Rendered in an effect so the static shell and the hydrated client agree,
+  // and so the date is actually today rather than a hardcoded string.
+  const [todayLabel, setTodayLabel] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    setTodayLabel(
+      new Date().toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })
+    );
+  }, []);
+
+  const girlfriendWindow = `${formatTime12h(GIRLFRIEND_TIME_BLOCK.startTime)} – ${formatTime12h(
+    GIRLFRIEND_TIME_BLOCK.endTime
+  )}`;
 
   return (
     <div className="flex flex-col w-full gap-7">
-      {/* Rollover Notification Banner */}
-      {rolloverNotice && (
-        <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-[var(--bg-surface)] text-xs text-[var(--text-primary)] border border-[var(--border-subtle)]/60 shadow-xs animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-full bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
-              <Sparkles className="h-3.5 w-3.5" />
-            </div>
-            <span>{rolloverNotice}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setKickoffOpen(true)}
-              className="text-[11px] font-bold text-[var(--primary)] hover:underline px-2 py-1"
-            >
-              Review in Kickoff →
-            </button>
-            <button
-              type="button"
-              onClick={() => setRolloverNotice(null)}
-              className="text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors px-2 py-1 rounded-md hover:bg-[var(--bg-subdued)]"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Hero Header Section */}
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-2 border-b border-[var(--border-subtle)]/30">
         <div>
-          <div className="flex items-center gap-2 mb-1.5 text-xs text-[var(--text-secondary)] font-medium">
-            <span className="text-[var(--primary)] font-semibold">
-              {mockProfile.currentTerm}
-            </span>
-            <span>•</span>
-            <span>Week {mockProfile.currentWeek}</span>
-            <span>•</span>
-            <span className="bg-[var(--bg-subdued)] px-2 py-0.5 rounded-full text-[11px] font-semibold text-[var(--text-primary)]">
-              Day 4 in Session
-            </span>
-          </div>
-
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-            Thursday, 22 October
+            {todayLabel ?? "\u00A0"}
           </h1>
 
           <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
-            {stats.top3Remaining} priorities remaining • 4 scheduled classes • 4-7 PM Girlfriend Time Reserved
+            {stats.top3Remaining} of 3 priorities open • {girlfriendWindow} reserved for{" "}
+            {GIRLFRIEND_TIME_BLOCK.title.toLowerCase()}
           </p>
         </div>
 
@@ -92,7 +73,7 @@ export default function TodayPage() {
             type="button"
             size="sm"
             onClick={() => setKickoffOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold rounded-full shadow-[0_4px_14px_rgba(94,92,230,0.25)]"
+            className="flex items-center gap-1.5 text-xs font-semibold rounded-full shadow-[var(--shadow-glow)]"
           >
             <Sun className="h-3.5 w-3.5" />
             <span>Morning Kickoff</span>
@@ -103,7 +84,7 @@ export default function TodayPage() {
             variant="secondary"
             size="sm"
             onClick={() => setViewOptionsOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subdued)] shadow-xs border border-[var(--border-subtle)]/60 rounded-full"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subdued)] border border-[var(--border-subtle)]/60 rounded-full"
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
             <span>Customize</span>
@@ -126,7 +107,7 @@ export default function TodayPage() {
           <DeadlineRunwayCard />
 
           {/* 3. Today's Class Schedule (Sunsama-Style Proportional Timetable) */}
-          <ScheduleTimeline initialDayOrder={4} />
+          <ScheduleTimeline initialDayOrder={1} />
 
           {/* 4. Daily Reflection Journal Note */}
           <CheckInCard
@@ -148,11 +129,7 @@ export default function TodayPage() {
           <WeeklyProgressCard
             completedTasks={stats.completed}
             totalTasks={stats.total}
-            velocity="+4 vs last wk"
           />
-
-          {/* 4. Study Consistency 12-Week Heatmap */}
-          <StudyHeatmapCard />
         </aside>
       </div>
 

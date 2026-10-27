@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { mockProfile } from "@/lib/mock-data";
@@ -50,8 +50,8 @@ export function Header({ onSearch }: HeaderProps) {
 
           <Avatar className="h-8 w-8 ring-2 ring-[var(--bg-surface)] shadow-sm cursor-pointer hover:opacity-90 transition-opacity">
             <AvatarImage src={mockProfile.avatarUrl} alt={mockProfile.fullName} />
-            <AvatarFallback>
-              <User className="h-4 w-4" />
+            <AvatarFallback className="bg-[var(--primary-fixed)] text-[11px] font-semibold text-[var(--on-primary-fixed)]">
+              RM
             </AvatarFallback>
           </Avatar>
         </div>

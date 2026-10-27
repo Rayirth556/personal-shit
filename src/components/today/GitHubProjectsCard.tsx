@@ -74,7 +74,7 @@ export function GitHubProjectsCard({
   };
 
   return (
-    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 transition-all flex flex-col gap-4">
+    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[var(--shadow-card)] transition-all flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]/40">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -151,8 +151,21 @@ export function GitHubProjectsCard({
             <span>Fetching latest repositories and commits...</span>
           </div>
         ) : repos.length === 0 ? (
-          <div className="py-6 text-center text-xs text-[var(--text-secondary)]">
-            No public repositories found for @{username}.
+          <div className="py-6 px-2 text-center text-xs text-[var(--text-secondary)] flex flex-col items-center gap-2">
+            <span>
+              {data?.source === "unavailable"
+                ? (data?.reason ?? "GitHub is unreachable right now.")
+                : `No public repositories found for @${username}.`}
+            </span>
+            {data?.source === "unavailable" && (
+              <button
+                type="button"
+                onClick={handleRefresh}
+                className="text-[11px] font-semibold text-[var(--primary)] hover:underline"
+              >
+                Try again
+              </button>
+            )}
           </div>
         ) : (
           repos.slice(0, 4).map((repo) => (

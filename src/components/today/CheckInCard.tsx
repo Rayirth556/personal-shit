@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Flame, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Lock, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CheckInCardProps {
@@ -37,23 +37,16 @@ export function CheckInCard({ onReflect }: CheckInCardProps) {
   };
 
   return (
-    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 md:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 transition-all">
+    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 md:p-6 shadow-[var(--shadow-card)] transition-all">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[var(--primary)]" />
-          <h2 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
-            End-of-day check-in
-          </h2>
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] bg-[var(--bg-subdued)] px-3 py-1 rounded-full">
-          <Flame className="h-3.5 w-3.5 text-orange-500 fill-orange-500" />
-          <span className="font-semibold text-[var(--text-primary)]">5-day streak</span>
-        </div>
+      <div className="flex items-center gap-2 mb-2">
+        <h2 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
+          End-of-day check-in
+        </h2>
       </div>
 
       <p className="text-xs text-[var(--text-secondary)] mb-4">
-        Take a calm moment to capture your progress, hurdles, and takeaways.
+        What moved today, and what got in the way.
       </p>
 
       {/* Form */}
@@ -63,7 +56,7 @@ export function CheckInCard({ onReflect }: CheckInCardProps) {
             value={reflection}
             onChange={(e) => setReflection(e.target.value)}
             disabled={isSubmitted}
-            placeholder="What did you get done today? (e.g. Mastered Chomsky Normal Form, closed 2 PRs...)"
+            placeholder="What moved today? What blocked you?"
             rows={3}
             className="w-full bg-[var(--bg-subdued)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] p-3.5 rounded-xl text-sm transition-all focus:outline-none focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--primary)]/20 resize-none border border-transparent focus:border-[var(--border-subtle)]"
           />

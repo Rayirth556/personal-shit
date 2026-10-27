@@ -67,89 +67,6 @@ function formatTimeAgo(dateString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const FALLBACK_REPOSITORIES: GitHubRepoCommit[] = [
-  {
-    id: 1,
-    name: "autonomous-campus-rover",
-    fullName: "Rayirth556/autonomous-campus-rover",
-    description: "ROS2-driven indoor courier robot with LiDAR SLAM and path planning",
-    htmlUrl: "https://github.com/Rayirth556/autonomous-campus-rover",
-    stars: 12,
-    forks: 3,
-    language: "Python",
-    languageColor: "#3572A5",
-    defaultBranch: "main",
-    pushedAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    timeAgo: "45m ago",
-    latestCommit: {
-      message: "feat(slam): tune velocity curves and optimize lidar point cloud drift",
-      sha: "8f4a1c9",
-      author: "Rayirth556",
-      date: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    },
-  },
-  {
-    id: 2,
-    name: "DS-Python",
-    fullName: "Rayirth556/DS-Python",
-    description: "Data Structures & Algorithms implementations in Python with unit tests",
-    htmlUrl: "https://github.com/Rayirth556/DS-Python",
-    stars: 4,
-    forks: 1,
-    language: "Python",
-    languageColor: "#3572A5",
-    defaultBranch: "main",
-    pushedAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-    timeAgo: "3h ago",
-    latestCommit: {
-      message: "refactor: optimize AVL tree balancing rotation and add red-black tests",
-      sha: "4d7e2b1",
-      author: "Rayirth556",
-      date: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-    },
-  },
-  {
-    id: 3,
-    name: "container-orchestrator-lab",
-    fullName: "Rayirth556/container-orchestrator-lab",
-    description: "Lightweight container runtime and cgroup isolates for Linux lab experiments",
-    htmlUrl: "https://github.com/Rayirth556/container-orchestrator-lab",
-    stars: 7,
-    forks: 2,
-    language: "Rust",
-    languageColor: "#DEA584",
-    defaultBranch: "main",
-    pushedAt: new Date(Date.now() - 1000 * 60 * 60 * 22).toISOString(),
-    timeAgo: "22h ago",
-    latestCommit: {
-      message: "fix(network): bridge namespace veth pairs and iptables masquerade",
-      sha: "9a2f6d4",
-      author: "Rayirth556",
-      date: new Date(Date.now() - 1000 * 60 * 60 * 22).toISOString(),
-    },
-  },
-  {
-    id: 4,
-    name: "automata-cnf-converter",
-    fullName: "Rayirth556/automata-cnf-converter",
-    description: "Chomsky Normal Form parser and pushdown automata simulator in TypeScript",
-    htmlUrl: "https://github.com/Rayirth556/automata-cnf-converter",
-    stars: 5,
-    forks: 0,
-    language: "TypeScript",
-    languageColor: "#3178C6",
-    defaultBranch: "main",
-    pushedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    timeAgo: "2d ago",
-    latestCommit: {
-      message: "feat: add CYK parsing algorithm for context-free grammar validation",
-      sha: "e5c102a",
-      author: "Rayirth556",
-      date: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    },
-  },
-];
-
 let memoryCache: { timestamp: number; username: string; data: unknown } | null = null;
 const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes cache
 
@@ -179,31 +96,33 @@ export async function GET(request: Request) {
       `https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=pushed&direction=desc&per_page=6`,
       {
         headers,
-        signal: AbortSignal.timeout(2500),
+        signal: AbortSignal.timeout(8000),
       }
     );
 
+    // No fixtures. If GitHub says no, the UI says no.
     if (!res.ok) {
-      console.warn(
-        `GitHub API returned ${res.status} for user ${username}, serving curated repositories.`
-      );
       return NextResponse.json({
         username,
-        source: "fallback",
-        repositories: FALLBACK_REPOSITORIES,
+        source: "unavailable",
+        reason:
+          res.status === 403 || res.status === 429
+            ? "GitHub API rate limit reached. Add a GITHUB_TOKEN to raise it."
+            : `GitHub API returned ${res.status}.`,
+        repositories: [],
       });
     }
 
     const reposData = await res.json();
-    if (!Array.isArray(reposData) || reposData.length === 0) {
+    if (!Array.isArray(reposData)) {
       return NextResponse.json({
         username,
-        source: "fallback",
-        repositories: FALLBACK_REPOSITORIES,
+        source: "unavailable",
+        reason: "Unexpected GitHub response.",
+        repositories: [],
       });
     }
 
-    // Enhance each repo with commit information if possible
     const enhancedRepos: GitHubRepoCommit[] = await Promise.all(
       reposData.slice(0, 5).map(async (repo: GitHubApiRawRepo) => {
         let latestCommit: GitHubRepoCommit["latestCommit"] = undefined;
@@ -226,17 +145,9 @@ export async function GET(request: Request) {
             }
           }
         } catch {
-          // Keep commit optional
-        }
-
-        // If no commit fetched, provide sensible commit description
-        if (!latestCommit) {
-          latestCommit = {
-            message: repo.description || "Updated project repository files",
-            sha: (repo.id % 9000000 + 1000000).toString(16).substring(0, 7),
-            author: repo.owner.login,
-            date: repo.pushed_at,
-          };
+          // Commit enrichment is optional; leaving it undefined hides the row
+          // rather than inventing a commit that never happened.
+          latestCommit = undefined;
         }
 
         const lang = repo.language || "TypeScript";
@@ -258,16 +169,6 @@ export async function GET(request: Request) {
       })
     );
 
-    // If user has very few repos, merge with our academic project repos so they see a full feed
-    if (enhancedRepos.length < 3) {
-      const existingNames = new Set(enhancedRepos.map((r) => r.name.toLowerCase()));
-      for (const fb of FALLBACK_REPOSITORIES) {
-        if (!existingNames.has(fb.name.toLowerCase())) {
-          enhancedRepos.push(fb);
-        }
-      }
-    }
-
     const responsePayload = {
       username,
       source: "github_api",
@@ -283,16 +184,11 @@ export async function GET(request: Request) {
     return NextResponse.json(responsePayload);
   } catch (error) {
     console.error("Error fetching GitHub repos:", error);
-    const fallbackPayload = {
+    return NextResponse.json({
       username,
-      source: "fallback",
-      repositories: FALLBACK_REPOSITORIES,
-    };
-    memoryCache = {
-      timestamp: Date.now(),
-      username,
-      data: fallbackPayload,
-    };
-    return NextResponse.json(fallbackPayload);
+      source: "unavailable",
+      reason: "Could not reach GitHub.",
+      repositories: [],
+    });
   }
 }

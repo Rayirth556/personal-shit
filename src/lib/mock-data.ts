@@ -106,13 +106,13 @@ export interface HistoryDay {
 
 export const mockProfile: Profile = {
   id: "user-1",
-  fullName: "Alex Rivera",
-  email: "alex.rivera@university.edu",
-  avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
-  currentTerm: "Autumn Term",
-  currentWeek: 6,
-  totalWeeks: 14,
-  wifiNetwork: "Eduroam 5GHz",
+  fullName: "Rayirth Misra",
+  email: "",
+  avatarUrl: "",
+  currentTerm: "Semester 5",
+  currentWeek: 0,
+  totalWeeks: 0,
+  wifiNetwork: "",
 };
 
 export const mockTop3Tasks: Task[] = [

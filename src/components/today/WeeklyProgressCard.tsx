@@ -5,13 +5,11 @@ import * as React from "react";
 interface WeeklyProgressCardProps {
   completedTasks?: number;
   totalTasks?: number;
-  velocity?: string;
 }
 
 export function WeeklyProgressCard({
-  completedTasks = 12,
-  totalTasks = 18,
-  velocity = "+4 vs last wk",
+  completedTasks = 0,
+  totalTasks = 0,
 }: WeeklyProgressCardProps) {
   const percent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   const radius = 48;
@@ -19,7 +17,7 @@ export function WeeklyProgressCard({
   const strokeDashoffset = circumference - (percent / 100) * circumference;
 
   return (
-    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[var(--border-subtle)]/40 transition-all">
+    <section className="bg-[var(--bg-surface)] rounded-[20px] p-5 shadow-[var(--shadow-card)] transition-all">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -27,11 +25,11 @@ export function WeeklyProgressCard({
             This week
           </h3>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Weekly goal progress
+            Tasks closed vs. open
           </p>
         </div>
         <span className="px-2.5 py-0.5 rounded-full bg-[var(--bg-subdued)] text-[var(--text-secondary)] text-[11px] font-semibold uppercase tracking-wider">
-          {percent}% on track
+          {totalTasks > 0 ? `${percent}%` : "No tasks"}
         </span>
       </div>
 
@@ -89,10 +87,10 @@ export function WeeklyProgressCard({
 
         <div className="p-2 rounded-xl bg-[var(--bg-subdued)]/60">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-            Velocity
+            Done
           </p>
-          <p className="text-sm font-semibold text-[var(--secondary)] mt-0.5">
-            {velocity}
+          <p className="text-sm font-semibold text-[var(--text-primary)] mt-0.5">
+            {completedTasks} tasks
           </p>
         </div>
       </div>

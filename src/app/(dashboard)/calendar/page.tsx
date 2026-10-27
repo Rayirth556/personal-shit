@@ -10,9 +10,9 @@ import { DayScheduleCard } from "@/components/calendar/DayScheduleCard";
 import { NewEventModal } from "@/components/calendar/NewEventModal";
 
 export default function CalendarPage() {
-  const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date(2024, 9, 22));
+  const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date());
   const [view, setView] = React.useState<"month" | "week" | "agenda">("month");
-  const [selectedDay, setSelectedDay] = React.useState<number>(28);
+  const [selectedDay, setSelectedDay] = React.useState<number>(() => new Date().getDate());
   const [newEventOpen, setNewEventOpen] = React.useState(false);
 
   const currentMonth = currentDate.toLocaleDateString("en-US", {
@@ -29,16 +29,29 @@ export default function CalendarPage() {
   };
 
   const handleTodayClick = () => {
-    setCurrentDate(new Date(2024, 9, 22));
-    setSelectedDay(22);
+    const now = new Date();
+    setCurrentDate(now);
+    setSelectedDay(now.getDate());
   };
+
+  // Week view label follows the displayed month instead of a frozen date.
+  const weekRangeLabel = React.useMemo(() => {
+    const now = new Date();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const fmt = (d: Date) =>
+      d.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+    return `${fmt(monday)} – ${fmt(sunday)}`;
+  }, []);
 
   return (
     <div className="flex flex-col w-full gap-6">
       {/* Calendar Top Navigation Header */}
       <CalendarHeader
         currentMonth={currentMonth}
-        currentTerm="Term 1"
+        currentTerm="Semester 5"
         view={view}
         onViewChange={setView}
         onNewEventClick={() => setNewEventOpen(true)}
@@ -63,7 +76,7 @@ export default function CalendarPage() {
           {view === "week" && (
             <div className="py-12 text-center text-sm text-[var(--text-secondary)]">
               <p className="font-semibold text-base text-[var(--text-primary)] mb-1">
-                Week 4 (October 20 – October 26)
+                This week ({weekRangeLabel})
               </p>
               <p>Active 7-day academic horizon with hourly time slots.</p>
               <button
