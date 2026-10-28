@@ -1,30 +1,62 @@
 "use client";
 
 import * as React from "react";
-import { BookOpen, MapPin, Download } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   TIME_SLOTS,
   TIMETABLE_DAYS,
   ENROLLED_COURSES,
-  ClassType,
   ClassSession,
 } from "@/lib/timetable-data";
 import { cn } from "@/lib/utils";
 
+/** Rules are coloured by class type, using the same three tokens as the
+ *  rest of the app: theory = assignment, lab = project, elective = personal. */
+function ruleColor(cls: ClassSession): string {
+  if (cls.type === "practical") return "var(--project)";
+  const name = cls.courseName.toLowerCase();
+  if (name.includes("stress") || name.includes("art")) return "var(--personal)";
+  return "var(--assignment)";
+}
+
+function typeLabel(cls: ClassSession): string {
+  if (cls.type === "practical") return "lab";
+  const name = cls.courseName.toLowerCase();
+  if (name.includes("stress") || name.includes("art")) return "elective";
+  return "theory";
+}
+
+function minutesBetween(start: string, end: string): number {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  return Math.max(0, eh * 60 + em - (sh * 60 + sm));
+}
+
 export default function TimetablePage() {
   const [activeView, setActiveView] = React.useState<"matrix" | "day">("matrix");
-  const [selectedDayOrder, setSelectedDayOrder] = React.useState<number>(4);
+  const [selectedDayOrder, setSelectedDayOrder] = React.useState<number>(1);
   const [selectedClass, setSelectedClass] = React.useState<ClassSession | null>(null);
 
-  // Helper to find class in a specific slot for a day
+  const totalSessions = React.useMemo(
+    () => TIMETABLE_DAYS.reduce((sum, day) => sum + day.classes.length, 0),
+    []
+  );
+
+  const totalMinutes = React.useMemo(
+    () =>
+      TIMETABLE_DAYS.reduce(
+        (sum, day) =>
+          sum + day.classes.reduce((s, c) => s + minutesBetween(c.startTime, c.endTime), 0),
+        0
+      ),
+    []
+  );
+
   const getClassInSlot = (dayOrder: number, slotNumber: number) => {
     const day = TIMETABLE_DAYS.find((d) => d.dayOrder === dayOrder);
     if (!day) return null;
-    return day.classes.find(
-      (c) => slotNumber >= c.startSlot && slotNumber <= c.endSlot
-    );
+    return day.classes.find((c) => slotNumber >= c.startSlot && slotNumber <= c.endSlot);
   };
 
   const isSlotStart = (dayOrder: number, slotNumber: number) => {
@@ -41,427 +73,370 @@ export default function TimetablePage() {
     return cls.endSlot - cls.startSlot + 1;
   };
 
-  const getCellStyling = (type?: ClassType, name?: string) => {
-    if (type === "practical") {
-      return {
-        container:
-          "bg-teal-50 border-teal-200 text-teal-950 dark:bg-teal-950/40 dark:border-teal-700/50 dark:text-teal-200 hover:border-teal-400",
-        badge: "bg-teal-200/60 text-teal-900 dark:bg-teal-800/60 dark:text-teal-100",
-        border: "border-teal-200/80 dark:border-teal-800/60",
-      };
-    }
-    if (name?.toLowerCase().includes("stress") || name?.toLowerCase().includes("art")) {
-      return {
-        container:
-          "bg-purple-50 border-purple-200 text-purple-950 dark:bg-purple-950/40 dark:border-purple-700/50 dark:text-purple-200 hover:border-purple-400",
-        badge: "bg-purple-200/60 text-purple-900 dark:bg-purple-800/60 dark:text-purple-100",
-        border: "border-purple-200/80 dark:border-purple-800/60",
-      };
-    }
-    return {
-      container:
-        "bg-amber-50/90 border-amber-200 text-amber-950 dark:bg-amber-950/40 dark:border-amber-700/50 dark:text-amber-100 hover:border-amber-400",
-      badge: "bg-amber-200/60 text-amber-900 dark:bg-amber-800/60 dark:text-amber-100",
-      border: "border-amber-200/80 dark:border-amber-800/60",
-    };
-  };
-
   const handleExportJSON = () => {
     const jsonStr = JSON.stringify(TIMETABLE_DAYS, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "campus-web-timetable-batch-2.json";
+    a.download = "timetable-semester-5.json";
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="flex flex-col w-full gap-6">
+    <div className="flex flex-col w-full gap-7">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <header className="flex flex-col gap-4 border-b border-[var(--border-subtle)] pb-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              The Campus Web
-            </span>
-            <span className="w-1 h-1 rounded-[var(--radius-md)] bg-[var(--border-subtle)]" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">
-              Batch 2
-            </span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-[-0.015em] text-[var(--text-primary)]">
-            Academic Timetable
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            Semester 5 · 5 day orders
+          </p>
+          <h1 className="display text-[40px] leading-[0.92] text-[var(--text-primary)]">
+            Timetable
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
-            5-Day Order Cycle • Theory, Practical Labs &amp; Classroom Venues
+          <p className="mt-2.5 text-[13px] text-[var(--text-secondary)]">
+            {totalSessions} sessions
+            <span className="mx-1.5 text-[var(--text-tertiary)]">·</span>
+            {(totalMinutes / 60).toFixed(1)}h contact across the cycle
           </p>
         </div>
 
-        {/* Legend & Controls */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Legend */}
-          <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-surface)] px-3 py-1.5 rounded-[var(--radius-md)] shadow-xs border border-[var(--border-subtle)] text-xs">
-            <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-              <span className="w-2.5 h-2.5 rounded-xs bg-amber-400 border border-amber-500/40" />
-              <span>Theory</span>
-            </div>
-            <span className="text-[var(--border-subtle)]">•</span>
-            <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-              <span className="w-2.5 h-2.5 rounded-xs bg-teal-400 border border-teal-500/40" />
-              <span>Practical (Lab)</span>
-            </div>
-            <span className="text-[var(--border-subtle)]">•</span>
-            <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-              <span className="w-2.5 h-2.5 rounded-xs bg-purple-400 border border-purple-500/40" />
-              <span>Elective</span>
-            </div>
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Type legend */}
+          <div className="hidden items-center gap-3 sm:flex">
+            {[
+              { label: "Theory", token: "--assignment" },
+              { label: "Lab", token: "--project" },
+              { label: "Elective", token: "--personal" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: `var(${item.token})` }}
+                />
+                <span className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center p-1 bg-[var(--bg-high)]/60 rounded-[var(--radius-md)] border border-[var(--border-subtle)] shadow-inner">
-            <button
-              type="button"
-              onClick={() => setActiveView("matrix")}
-              className={cn(
-                "px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all",
-                activeView === "matrix"
-                  ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold shadow-xs"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              )}
-            >
-              Full Grid
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveView("day")}
-              className={cn(
-                "px-3 py-1 rounded-[var(--radius-md)] text-xs font-medium transition-all",
-                activeView === "day"
-                  ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold shadow-xs"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              )}
-            >
-              Day View
-            </button>
+          <div className="h-3 w-px bg-[var(--border-subtle)]" />
+
+          {/* View switch */}
+          <div className="flex items-center gap-2.5">
+            {(["matrix", "day"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setActiveView(v)}
+                className={cn(
+                  "font-mono text-[10px] uppercase tracking-[0.06em] transition-colors",
+                  activeView === v
+                    ? "text-[var(--text-primary)] underline decoration-1 underline-offset-4"
+                    : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                )}
+              >
+                {v === "matrix" ? "Grid" : "Day"}
+              </button>
+            ))}
           </div>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleExportJSON}
-            className="rounded-[var(--radius-md)] shadow-xs text-xs"
-          >
-            <Download className="h-3.5 w-3.5" />
+          <Button variant="secondary" size="sm" onClick={handleExportJSON} className="text-[11px]">
+            <Download className="h-3 w-3" />
             <span className="hidden sm:inline">Export</span>
           </Button>
         </div>
       </header>
 
-      {/* MATRIX VIEW (Full Table matching Campus Web) */}
+      {/* GRID */}
       {activeView === "matrix" ? (
-        <Card className="p-4 sm:p-6 flex flex-col gap-4 overflow-hidden">
-          <div className="overflow-x-auto pb-2">
-            <div className="min-w-[1020px] flex flex-col">
-              {/* Header Row: Slots */}
-              <div className="grid grid-cols-13 gap-1.5 pb-2 border-b border-[var(--border-subtle)] text-center font-mono">
-                <div className="text-[11px] font-bold text-[var(--text-secondary)] uppercase flex items-center justify-center p-2 bg-[var(--bg-subdued)] rounded-lg">
-                  DAY
+        <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <div className="overflow-x-auto">
+            <div className="min-w-[1020px]">
+              {/* Slot header */}
+              <div className="grid grid-cols-13 border-b border-[var(--border-subtle)]">
+                <div className="px-3 py-2 font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                  Day
                 </div>
                 {TIME_SLOTS.map((slot) => (
                   <div
                     key={slot.slotNumber}
-                    className="p-1.5 rounded-lg bg-[var(--bg-subdued)]/60 flex flex-col items-center justify-center text-[10px] leading-tight"
+                    className="border-l border-[var(--border-subtle)] px-1 py-2 text-center font-mono text-[9px] leading-tight"
                   >
-                    <span className="font-semibold text-[var(--text-primary)]">
-                      {slot.timeStart}
-                    </span>
-                    <span className="text-[9px] text-[var(--text-secondary)] opacity-80">
-                      {slot.timeEnd}
-                    </span>
+                    <div className="text-[var(--text-secondary)]">{slot.timeStart}</div>
+                    <div className="text-[8px] text-[var(--text-tertiary)]">{slot.timeEnd}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Day Rows (Day 1 to 5) */}
-              <div className="flex flex-col gap-2 pt-2">
-                {TIMETABLE_DAYS.map((day) => {
-                  let skipSlots = 0;
-
-                  return (
-                    <div
-                      key={day.dayOrder}
-                      className="grid grid-cols-13 gap-1.5 items-stretch min-h-[82px]"
-                    >
-                      {/* Day Number Label */}
-                      <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-subdued)] font-bold text-sm text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]">
-                        <span className="text-base font-semibold">{day.dayOrder}</span>
-                        <span className="text-[9px] font-semibold text-[var(--text-secondary)] uppercase">
-                          DAY
-                        </span>
-                      </div>
-
-                      {/* 12 Slot Columns */}
-                      {TIME_SLOTS.map((slot) => {
-                        if (skipSlots > 0) {
-                          skipSlots--;
-                          return null;
-                        }
-
-                        const cls = getClassInSlot(day.dayOrder, slot.slotNumber);
-                        const isStart = isSlotStart(day.dayOrder, slot.slotNumber);
-                        const span = isStart ? getSlotSpan(day.dayOrder, slot.slotNumber) : 1;
-
-                        if (cls && isStart) {
-                          skipSlots = span - 1;
-                          const styling = getCellStyling(cls.type, cls.courseName);
-
-                          return (
-                            <div
-                              key={slot.slotNumber}
-                              style={{ gridColumn: `span ${span} / span ${span}` }}
-                              onClick={() => setSelectedClass(cls)}
-                              className={cn(
-                                "p-2 sm:p-2.5 rounded-xl border flex flex-col justify-between transition-all hover:scale-[1.01] hover:shadow-md cursor-pointer select-none",
-                                styling.container
-                              )}
-                            >
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-[11px] sm:text-xs font-bold leading-snug line-clamp-2">
-                                  {cls.courseName}
-                                </span>
-                              </div>
-
-                              <div
-                                className={cn(
-                                  "flex items-center justify-between text-[10px] font-semibold pt-1 border-t mt-1",
-                                  styling.border
-                                )}
-                              >
-                                <span className="font-mono text-[9px] sm:text-[10px] tracking-[-0.015em] truncate">
-                                  {cls.room || "TBA"}
-                                </span>
-                                {span > 1 && (
-                                  <span
-                                    className={cn(
-                                      "uppercase text-[8px] sm:text-[9px] tracking-wider px-1.5 py-0.2 rounded-[var(--radius-md)] shrink-0",
-                                      styling.badge
-                                    )}
-                                  >
-                                    {cls.type === "practical" ? "Lab" : "Theory"}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        if (!cls) {
-                          return (
-                            <div
-                              key={slot.slotNumber}
-                              className="p-1 rounded-xl bg-[var(--bg-subdued)]/25 border border-dashed border-[var(--border-subtle)] flex items-center justify-center"
-                            >
-                              <span className="text-[10px] text-[var(--text-secondary)]/30 select-none">
-                                —
-                              </span>
-                            </div>
-                          );
-                        }
-
-                        return null;
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </Card>
-      ) : (
-        /* DAY VIEW (Deep dive into single day) */
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 p-1 bg-[var(--bg-high)]/60 rounded-[var(--radius-md)] border border-[var(--border-subtle)] self-start">
-            {[1, 2, 3, 4, 5].map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setSelectedDayOrder(d)}
-                className={cn(
-                  "px-3.5 py-1 rounded-[var(--radius-md)] text-xs font-semibold transition-all",
-                  selectedDayOrder === d
-                    ? "bg-[var(--bg-surface)] text-[var(--primary)] shadow-xs"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                Day {d}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TIMETABLE_DAYS.find((d) => d.dayOrder === selectedDayOrder)?.classes.map(
-              (cls) => {
-                const styling = getCellStyling(cls.type, cls.courseName);
+              {/* Day rows */}
+              {TIMETABLE_DAYS.map((day) => {
+                let skipSlots = 0;
 
                 return (
-                  <Card
-                    key={cls.id}
-                    className={cn(
-                      "p-4 rounded-2xl flex flex-col justify-between border cursor-pointer hover:shadow-md transition-all",
-                      styling.container
-                    )}
-                    onClick={() => setSelectedClass(cls)}
+                  <div
+                    key={day.dayOrder}
+                    className="grid grid-cols-13 border-b border-[var(--border-subtle)] last:border-b-0"
                   >
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold tracking-[-0.015em]">
-                          {cls.startTime} – {cls.endTime}
-                        </span>
-                        <span
-                          className={cn(
-                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-md)]",
-                            styling.badge
-                          )}
-                        >
-                          {cls.type}
-                        </span>
-                      </div>
-
-                      <h3 className="text-base font-bold leading-snug">
-                        {cls.courseName}
-                      </h3>
-                      {cls.courseCode && (
-                        <span className="text-xs font-mono opacity-80">
-                          Code: {cls.courseCode}
-                        </span>
-                      )}
+                    {/* Day marker */}
+                    <div className="flex items-baseline gap-1 px-3 py-3">
+                      <span className="display tnum text-[22px] leading-none text-[var(--text-primary)]">
+                        {day.dayOrder}
+                      </span>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[var(--text-tertiary)]">
+                        day
+                      </span>
                     </div>
 
-                    <div
-                      className={cn(
-                        "flex items-center justify-between pt-3 border-t mt-3 text-xs font-medium",
-                        styling.border
-                      )}
-                    >
-                      <div className="flex items-center gap-1 font-semibold">
-                        <MapPin className="h-3.5 w-3.5" />
-                        <span>Room {cls.room}</span>
-                      </div>
-                      <span>{cls.durationLabel}</span>
-                    </div>
-                  </Card>
+                    {TIME_SLOTS.map((slot) => {
+                      if (skipSlots > 0) {
+                        skipSlots--;
+                        return null;
+                      }
+
+                      const cls = getClassInSlot(day.dayOrder, slot.slotNumber);
+                      const isStart = isSlotStart(day.dayOrder, slot.slotNumber);
+                      const span = isStart ? getSlotSpan(day.dayOrder, slot.slotNumber) : 1;
+
+                      if (cls && isStart) {
+                        skipSlots = span - 1;
+
+                        return (
+                          <button
+                            key={slot.slotNumber}
+                            type="button"
+                            onClick={() => setSelectedClass(cls)}
+                            style={{ gridColumn: `span ${span} / span ${span}` }}
+                            className="group relative flex min-h-[74px] flex-col justify-between border-l border-[var(--border-subtle)] px-2 py-2 text-left transition-colors hover:bg-[var(--bg-subdued)]/60"
+                          >
+                            <span
+                              className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full"
+                              style={{ backgroundColor: ruleColor(cls) }}
+                            />
+
+                            <span className="line-clamp-3 pl-1 text-[11px] leading-[1.25] text-[var(--text-primary)]">
+                              {cls.courseName}
+                            </span>
+
+                            <span className="mt-1 flex items-baseline justify-between gap-1 pl-1">
+                              <span className="truncate font-mono text-[9px] text-[var(--text-tertiary)]">
+                                {cls.room || "TBA"}
+                              </span>
+                              <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                                {typeLabel(cls)}
+                              </span>
+                            </span>
+                          </button>
+                        );
+                      }
+
+                      if (!cls) {
+                        return (
+                          <div
+                            key={slot.slotNumber}
+                            className="min-h-[74px] border-l border-[var(--border-subtle)]"
+                          />
+                        );
+                      }
+
+                      return null;
+                    })}
+                  </div>
                 );
-              }
+              })}
+            </div>
+          </div>
+        </section>
+      ) : (
+        /* DAY VIEW */
+        <section className="rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-3">
+            <h2 className="text-[15px] font-medium text-[var(--text-primary)]">
+              Day {selectedDayOrder}
+            </h2>
+            <div className="flex items-center gap-2.5">
+              {[1, 2, 3, 4, 5].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setSelectedDayOrder(d)}
+                  className={cn(
+                    "font-mono text-[10px] uppercase tracking-[0.06em] transition-colors",
+                    selectedDayOrder === d
+                      ? "text-[var(--text-primary)] underline decoration-1 underline-offset-4"
+                      : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                  )}
+                >
+                  D{d}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col divide-y divide-[var(--border-subtle)]">
+            {(TIMETABLE_DAYS.find((d) => d.dayOrder === selectedDayOrder)?.classes ?? []).map(
+              (cls) => (
+                <button
+                  key={cls.id}
+                  type="button"
+                  onClick={() => setSelectedClass(cls)}
+                  className="group relative flex items-start gap-3 py-3 pl-4 pr-3 text-left transition-colors hover:bg-[var(--bg-subdued)]/50"
+                >
+                  <span
+                    className="absolute left-0 top-3 bottom-3 w-[2px] rounded-full"
+                    style={{ backgroundColor: ruleColor(cls) }}
+                  />
+
+                  <span className="tnum w-11 shrink-0 pt-[3px] text-right font-mono text-[10px] text-[var(--text-tertiary)]">
+                    {cls.startTime}
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-baseline gap-2">
+                      <span className="truncate text-[13.5px] text-[var(--text-primary)]">
+                        {cls.courseName}
+                      </span>
+                      <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                        {typeLabel(cls)}
+                      </span>
+                    </span>
+                    <span className="mt-1 flex items-center gap-1.5 font-mono text-[10px] text-[var(--text-tertiary)]">
+                      <span className="tnum">
+                        {cls.startTime}–{cls.endTime}
+                      </span>
+                      {cls.courseCode && (
+                        <>
+                          <span>·</span>
+                          <span>{cls.courseCode}</span>
+                        </>
+                      )}
+                      {cls.room && (
+                        <>
+                          <span>·</span>
+                          <span>{cls.room}</span>
+                        </>
+                      )}
+                    </span>
+                  </span>
+
+                  <span className="tnum shrink-0 font-mono text-[10px] text-[var(--text-tertiary)]">
+                    {cls.durationLabel}
+                  </span>
+                </button>
+              )
             )}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Selected Class Detail Modal / Flyout if tapped */}
+      {/* Class detail panel */}
       {selectedClass && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm rounded-[24px] bg-[var(--bg-surface)] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.2)] border border-[var(--border-subtle)] flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-start justify-between">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setSelectedClass(null)}
+        >
+          <div
+            className="flex w-full max-w-sm flex-col gap-4 rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] px-2 py-0.5 rounded-[var(--radius-md)] bg-[var(--primary-fixed)]">
-                  {selectedClass.type}
-                </span>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mt-1.5">
+                <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[var(--text-tertiary)]">
+                  {typeLabel(selectedClass)} · {selectedClass.courseCode || "no code"}
+                </p>
+                <h3 className="mt-1 text-[15px] text-[var(--text-primary)]">
                   {selectedClass.courseName}
                 </h3>
-                {selectedClass.courseCode && (
-                  <p className="text-xs font-mono text-[var(--text-secondary)]">
-                    Course Code: {selectedClass.courseCode}
-                  </p>
-                )}
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedClass(null)}
-                className="w-7 h-7 rounded-[var(--radius-md)] bg-[var(--bg-subdued)] flex items-center justify-center text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                aria-label="Close"
+                className="rounded-[var(--radius-sm)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-subdued)] hover:text-[var(--text-primary)]"
               >
-                ✕
+                esc
               </button>
             </div>
 
-            <div className="flex flex-col gap-2 p-3 rounded-xl bg-[var(--bg-subdued)]/60 text-xs text-[var(--text-secondary)]">
-              <div className="flex items-center justify-between">
-                <span>Time Window:</span>
-                <strong className="text-[var(--text-primary)]">
-                  {selectedClass.startTime} – {selectedClass.endTime} ({selectedClass.durationLabel})
-                </strong>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Classroom / Lab:</span>
-                <strong className="text-[var(--text-primary)]">
-                  {selectedClass.room || "TBA"}
-                </strong>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Timetable Slots:</span>
-                <strong className="text-[var(--text-primary)]">
-                  Slots {selectedClass.startSlot} – {selectedClass.endSlot}
-                </strong>
-              </div>
-            </div>
+            <dl className="flex flex-col divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
+              {[
+                {
+                  label: "Time",
+                  value: `${selectedClass.startTime}–${selectedClass.endTime}`,
+                },
+                { label: "Length", value: selectedClass.durationLabel },
+                { label: "Room", value: selectedClass.room || "TBA" },
+                {
+                  label: "Slots",
+                  value: `${selectedClass.startSlot}–${selectedClass.endSlot}`,
+                },
+              ].map((row) => (
+                <div key={row.label} className="flex items-baseline justify-between py-2">
+                  <dt className="font-mono text-[9.5px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                    {row.label}
+                  </dt>
+                  <dd className="tnum font-mono text-[11px] text-[var(--text-primary)]">
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
 
-            <Button
-              size="sm"
-              className="w-full rounded-[var(--radius-md)]"
-              onClick={() => setSelectedClass(null)}
-            >
-              Done
+            <Button size="sm" className="w-full text-[11px]" onClick={() => setSelectedClass(null)}>
+              Close
             </Button>
           </div>
         </div>
       )}
 
-      {/* Enrolled Courses Master Directory */}
-      <section className="flex flex-col gap-4 pt-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-[var(--primary)]" />
-            <h2 className="text-base font-semibold text-[var(--text-primary)]">
-              Enrolled Course Modules &amp; Venues
-            </h2>
-          </div>
-          <span className="text-xs text-[var(--text-secondary)]">
-            {ENROLLED_COURSES.length} Courses Active
+      {/* Modules table */}
+      <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+        <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] px-4 py-3">
+          <h2 className="text-[15px] font-medium text-[var(--text-primary)]">Modules</h2>
+          <span className="font-mono text-[10px] text-[var(--text-tertiary)]">
+            {ENROLLED_COURSES.length} enrolled
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {ENROLLED_COURSES.map((course) => (
-            <Card
-              key={course.code}
-              className="p-3.5 rounded-2xl flex flex-col justify-between gap-2 border border-[var(--border-subtle)] hover:border-[var(--primary)]/40 transition-all"
-            >
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="font-bold text-[var(--primary)]">
-                    {course.code}
-                  </span>
-                  <span className="text-[10px] text-[var(--text-secondary)]">
-                    {course.type}
-                  </span>
-                </div>
-                <h4 className="text-sm font-semibold text-[var(--text-primary)] mt-1 leading-snug">
+        <table className="w-full border-collapse text-left">
+          <thead>
+            <tr className="border-b border-[var(--border-subtle)]">
+              {["Code", "Module", "Type", "Venue"].map((h) => (
+                <th
+                  key={h}
+                  className="px-4 py-2 font-mono text-[9px] font-normal uppercase tracking-[0.08em] text-[var(--text-tertiary)]"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {ENROLLED_COURSES.map((course) => (
+              <tr
+                key={course.code}
+                className="border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-subdued)]/40"
+              >
+                <td className="whitespace-nowrap px-4 py-2.5 font-mono text-[10.5px] text-[var(--text-tertiary)]">
+                  {course.code}
+                </td>
+                <td className="px-4 py-2.5 text-[12.5px] text-[var(--text-primary)]">
                   {course.name}
-                </h4>
-              </div>
-
-              <div className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)] bg-[var(--bg-subdued)] px-2 py-1 rounded-lg">
-                <MapPin className="h-3 w-3 shrink-0" />
-                <span className="truncate">
-                  {course.labRoom ? `Theory: ${course.theoryRoom} • Lab: ${course.labRoom}` : `Room: ${course.theoryRoom}`}
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
+                </td>
+                <td className="whitespace-nowrap px-4 py-2.5 font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                  {course.type}
+                </td>
+                <td className="whitespace-nowrap px-4 py-2.5 font-mono text-[10px] text-[var(--text-tertiary)]">
+                  {course.labRoom
+                    ? `${course.theoryRoom} / ${course.labRoom}`
+                    : course.theoryRoom}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </div>
   );
