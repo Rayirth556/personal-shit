@@ -3,17 +3,53 @@
 import * as React from "react";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { MonthGrid } from "@/components/calendar/MonthGrid";
-import { VelocitySparkline } from "@/components/calendar/VelocitySparkline";
-import { ExamSpotlightCard } from "@/components/calendar/ExamSpotlightCard";
+import { SelectedDayCard } from "@/components/calendar/SelectedDayCard";
 import { PrepPlanCard } from "@/components/calendar/PrepPlanCard";
-import { DayScheduleCard } from "@/components/calendar/DayScheduleCard";
 import { NewEventModal } from "@/components/calendar/NewEventModal";
+import { SEMESTER_5_DEADLINES } from "@/lib/runway-generator";
+import { cn } from "@/lib/utils";
+
+const CATEGORY_TOKEN: Record<string, string> = {
+  exam: "--exam",
+  assignment: "--assignment",
+  project: "--project",
+  personal: "--personal",
+};
+
+function localIso(date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function daysUntil(dateString: string, todayIso: string): number {
+  const a = new Date(`${dateString}T00:00:00`);
+  const b = new Date(`${todayIso}T00:00:00`);
+  return Math.round((a.getTime() - b.getTime()) / 86_400_000);
+}
+
+/** Monday-based week containing the given date. */
+function weekDates(anchor: Date): Date[] {
+  const monday = new Date(anchor);
+  monday.setDate(anchor.getDate() - ((anchor.getDay() + 6) % 7));
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+}
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date());
   const [view, setView] = React.useState<"month" | "week" | "agenda">("month");
   const [selectedDay, setSelectedDay] = React.useState<number>(() => new Date().getDate());
   const [newEventOpen, setNewEventOpen] = React.useState(false);
+  const [todayIso, setTodayIso] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setTodayIso(localIso());
+  }, []);
 
   const currentMonth = currentDate.toLocaleDateString("en-US", {
     month: "long",
@@ -34,21 +70,18 @@ export default function CalendarPage() {
     setSelectedDay(now.getDate());
   };
 
-  // Week view label follows the displayed month instead of a frozen date.
-  const weekRangeLabel = React.useMemo(() => {
-    const now = new Date();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    const fmt = (d: Date) =>
-      d.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
-    return `${fmt(monday)} – ${fmt(sunday)}`;
-  }, []);
+  const upcoming = React.useMemo(() => {
+    if (!todayIso) return [];
+    return SEMESTER_5_DEADLINES.map((d) => ({
+      ...d,
+      days: daysUntil(d.targetDate, todayIso),
+    })).sort((a, b) => a.targetDate.localeCompare(b.targetDate));
+  }, [todayIso]);
+
+  const week = React.useMemo(() => weekDates(new Date()), []);
 
   return (
     <div className="flex flex-col w-full gap-6">
-      {/* Calendar Top Navigation Header */}
       <CalendarHeader
         currentMonth={currentMonth}
         currentTerm="Semester 5"
@@ -60,113 +93,142 @@ export default function CalendarPage() {
         onTodayClick={handleTodayClick}
       />
 
-      {/* Main Workspace: Calendar Grid + Inspector Panel */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-        {/* Main Calendar Grid Column (xl:col-span-8) */}
-        <div className="xl:col-span-8 flex flex-col bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-4 sm:p-6 shadow-none border border-[var(--border-subtle)] transition-all">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+        {/* Main column */}
+        <div className="xl:col-span-8">
           {view === "month" && (
             <MonthGrid
               year={currentDate.getFullYear()}
               month={currentDate.getMonth()}
               selectedDay={selectedDay}
-              onSelectDay={(day) => setSelectedDay(day)}
+              onSelectDay={setSelectedDay}
             />
           )}
 
           {view === "week" && (
-            <div className="py-12 text-center text-sm text-[var(--text-secondary)]">
-              <p className="font-semibold text-base text-[var(--text-primary)] mb-1">
-                This week ({weekRangeLabel})
-              </p>
-              <p>Active 7-day academic horizon with hourly time slots.</p>
-              <button
-                type="button"
-                onClick={() => setView("month")}
-                className="mt-4 text-xs text-[var(--primary)] font-medium hover:underline"
-              >
-                ← Return to Month Grid
-              </button>
-            </div>
+            <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+              <div className="grid grid-cols-7 gap-px border-b border-[var(--border-subtle)] bg-[var(--border-subtle)]">
+                {week.map((d) => {
+                  const iso = localIso(d);
+                  const has = SEMESTER_5_DEADLINES.some((x) => x.targetDate === iso);
+                  const isToday = iso === todayIso;
+                  return (
+                    <div
+                      key={iso}
+                      className="bg-[var(--bg-surface)] px-2 py-2.5 text-center"
+                    >
+                      <p className="font-mono text-[8.5px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                        {d.toLocaleDateString("en-GB", { weekday: "short" })}
+                      </p>
+                      <p
+                        className={cn(
+                          "display tnum mt-1 text-[22px] leading-none",
+                          isToday
+                            ? "text-[var(--primary)]"
+                            : "text-[var(--text-primary)]"
+                        )}
+                      >
+                        {d.getDate()}
+                      </p>
+                      <span
+                        className={cn(
+                          "mx-auto mt-1.5 block h-1 w-1 rounded-full",
+                          has ? "bg-[var(--exam)]" : "bg-transparent"
+                        )}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-col divide-y divide-[var(--border-subtle)]">
+                {upcoming
+                  .filter((d) => {
+                    const iso = d.targetDate;
+                    return week.some((wd) => localIso(wd) === iso);
+                  })
+                  .map((d) => (
+                    <div key={d.id} className="flex items-center gap-3 px-4 py-2.5">
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: `var(${CATEGORY_TOKEN[d.category]})` }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] text-[var(--text-primary)]">
+                          {d.title}
+                        </p>
+                        <p className="mt-0.5 font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                          {d.courseCode} · {d.targetDate}
+                        </p>
+                      </div>
+                      <span className="tnum shrink-0 font-mono text-[10px] text-[var(--text-tertiary)]">
+                        {d.days < 0 ? "past" : d.days === 0 ? "today" : `in ${d.days}d`}
+                      </span>
+                    </div>
+                  ))}
+                {!upcoming.some((d) => week.some((wd) => localIso(wd) === d.targetDate)) && (
+                  <p className="px-4 py-6 text-center text-[11px] text-[var(--text-tertiary)]">
+                    Nothing due this week.
+                  </p>
+                )}
+              </div>
+            </section>
           )}
 
           {view === "agenda" && (
-            <div className="py-6 flex flex-col gap-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                Upcoming Academic Horizon &amp; Deadlines
-              </p>
-              {[
-                {
-                  date: "Tue 27 Oct",
-                  title: "Formal Language & Automata — Chart Prep & Viva Presentation",
-                  type: "project",
-                },
-                {
-                  date: "Wed 28 Oct",
-                  title: "Big Data Essentials — Project Review Milestone",
-                  type: "assignment",
-                },
-                {
-                  date: "Mon 02 Nov",
-                  title: "Discrete Mathematics — FT-IV Exam (Units 4 & 5)",
-                  type: "exam",
-                },
-                {
-                  date: "Tue 03 Nov",
-                  title: "Linux & Container Technologies — LLT Assessment Exam",
-                  type: "exam",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-subdued)] gap-3"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${
-                        item.type === "exam"
-                          ? "bg-[var(--exam)]"
-                          : item.type === "assignment"
-                          ? "bg-[var(--assignment)]"
-                          : "bg-[var(--project)]"
-                      }`}
-                    />
-                    <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
-                      {item.title}
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-mono text-[var(--text-secondary)] shrink-0 bg-[var(--bg-surface)] px-2.5 py-0.5 rounded-[var(--radius-md)] border border-[var(--border-subtle)] shadow-xs">
-                    {item.date}
-                  </span>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setView("month")}
-                className="mt-2 text-xs text-[var(--primary)] font-medium hover:underline text-left"
-              >
-                ← Return to Month Grid
-              </button>
-            </div>
-          )}
+            <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+              <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] px-4 py-3">
+                <h2 className="text-[15px] font-medium text-[var(--text-primary)]">
+                  Deadlines
+                </h2>
+                <span className="font-mono text-[10px] text-[var(--text-tertiary)]">
+                  semester 5
+                </span>
+              </div>
 
-          {/* Inline Month Velocity & Distribution Sparkline */}
-          <VelocitySparkline />
+              <div className="flex flex-col divide-y divide-[var(--border-subtle)]">
+                {upcoming.map((d) => (
+                  <div key={d.id} className="flex items-center gap-3 px-4 py-3">
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: `var(${CATEGORY_TOKEN[d.category]})` }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] text-[var(--text-primary)]">
+                        {d.title}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[9.5px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                        {d.courseCode}
+                        {d.targetTime ? ` · ${d.targetTime}` : ""}
+                        {d.location ? ` · ${d.location}` : ""}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="tnum font-mono text-[10.5px] text-[var(--text-secondary)]">
+                        {d.targetDate}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                        {d.days < 0 ? "past" : d.days === 0 ? "today" : `in ${d.days}d`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
-        {/* Right Inspector Panel: 340px (xl:col-span-4) */}
-        <aside className="xl:col-span-4 flex flex-col gap-6">
-          {/* Selected Date Header Card */}
-          <ExamSpotlightCard selectedDay={selectedDay} />
-
-          {/* Auto-suggested "Prep Plan" Card */}
+        {/* Inspector column */}
+        <aside className="flex flex-col gap-6 xl:col-span-4">
+          <SelectedDayCard
+            year={currentDate.getFullYear()}
+            month={currentDate.getMonth()}
+            day={selectedDay}
+          />
           <PrepPlanCard />
-
-          {/* Selected Day Timeline / Schedule Strip */}
-          <DayScheduleCard selectedDay={selectedDay} />
         </aside>
       </div>
 
-      {/* New Event Modal */}
       <NewEventModal
         open={newEventOpen}
         onOpenChange={setNewEventOpen}

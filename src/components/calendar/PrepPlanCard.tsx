@@ -1,157 +1,131 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle2, Circle, CalendarCheck } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SEMESTER_5_DEADLINES, generateRunwayMilestones } from "@/lib/runway-generator";
+import { useTasks } from "@/lib/task-store";
 
-interface PrepStep {
-  id: string;
-  dateLabel: string;
-  durationLabel: string;
-  taskTitle: string;
-  completed: boolean;
-  isToday?: boolean;
+function localIso(date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
-const initialSteps: PrepStep[] = [
-  {
-    id: "step-1",
-    dateLabel: "Thu 22 Oct (Today)",
-    durationLabel: "Scheduled",
-    taskTitle: "Process Scheduling & Paging (2 hrs)",
-    completed: true,
-    isToday: true,
-  },
-  {
-    id: "step-2",
-    dateLabel: "Fri 23 Oct",
-    durationLabel: "1.5 hrs",
-    taskTitle: "Solve Past Papers 2022–2023",
-    completed: false,
-  },
-  {
-    id: "step-3",
-    dateLabel: "Sat 24 Oct",
-    durationLabel: "2.5 hrs",
-    taskTitle: "Page Replacement Algorithms",
-    completed: false,
-  },
-  {
-    id: "step-4",
-    dateLabel: "Mon 26 Oct",
-    durationLabel: "2.0 hrs",
-    taskTitle: "Timed Mock Exam Simulation",
-    completed: false,
-  },
-  {
-    id: "step-5",
-    dateLabel: "Tue 27 Oct",
-    durationLabel: "1.0 hr",
-    taskTitle: "Formula cheat sheet & rest",
-    completed: false,
-  },
-];
-
 export function PrepPlanCard() {
-  const [steps, setSteps] = React.useState<PrepStep[]>(initialSteps);
-  const [blocksAdded, setBlocksAdded] = React.useState(false);
+  const { addTask } = useTasks();
+  const [completed, setCompleted] = React.useState<Record<string, boolean>>({});
+  const [addedId, setAddedId] = React.useState<string | null>(null);
 
-  const toggleStep = (id: string) => {
-    setSteps((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, completed: !s.completed } : s))
+  // The nearest upcoming exam, falling back to the nearest deadline.
+  const today = localIso();
+  const deadline = React.useMemo(() => {
+    const upcoming = SEMESTER_5_DEADLINES.filter((d) => d.targetDate >= today).sort(
+      (a, b) => a.targetDate.localeCompare(b.targetDate)
     );
-  };
+    if (upcoming.length === 0) return SEMESTER_5_DEADLINES[0];
+    const nextExam = upcoming.find((d) => d.category === "exam");
+    return nextExam ?? upcoming[0];
+  }, [today]);
 
-  const handleAddAll = () => {
-    setBlocksAdded(true);
-    setSteps((prev) => prev.map((s) => ({ ...s, completed: true })));
+  const steps = React.useMemo(
+    () => generateRunwayMilestones(deadline, today),
+    [deadline, today]
+  );
+
+  const firstOpen = steps.find((s) => !completed[s.id]);
+
+  const handleAddFirst = () => {
+    if (!firstOpen) return;
+    addTask({
+      title: firstOpen.title,
+      category: firstOpen.category,
+      priority: "high",
+      status: "todo",
+      isTopPriorityToday: true,
+      dueLabel: `Prep · ${deadline.courseCode}`,
+      subtitle: firstOpen.actionableStep,
+    });
+    setAddedId(firstOpen.id);
   };
 
   return (
-    <div className="bg-[var(--bg-surface)] rounded-[var(--radius-card)] p-5 shadow-none border border-[var(--border-subtle)] flex flex-col gap-4 transition-all">
-      {/* Header */}
-      <div className="flex items-baseline justify-between">
-        <span className="text-[15px] font-medium text-[var(--text-primary)]">
-          Prep plan
-        </span>
+    <section className="rounded-[var(--radius-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5">
+      <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-2.5">
+        <span className="text-[15px] font-medium text-[var(--text-primary)]">Prep plan</span>
         <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-          {steps.length} sittings
+          {deadline.courseCode}
         </span>
       </div>
 
-      <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-        Sittings spread over the days before the exam.
+      <p className="mt-2.5 text-[11px] text-[var(--text-secondary)]">
+        Sittings leading up to{" "}
+        <span className="text-[var(--text-primary)]">{deadline.title}</span>
       </p>
 
-      {/* Plan Timeline Checklist */}
-      <div className="flex flex-col gap-2">
+      <div className="mt-3 flex flex-col">
         {steps.map((step) => {
+          const done = !!completed[step.id];
           return (
-            <div
+            <button
               key={step.id}
-              onClick={() => toggleStep(step.id)}
-              className={cn(
-                "flex items-start gap-2.5 p-2 rounded-xl transition-all cursor-pointer select-none",
-                step.isToday
-                  ? "bg-[var(--primary-fixed)]/20 border border-[var(--primary)]/20"
-                  : "hover:bg-[var(--bg-subdued)]"
-              )}
+              type="button"
+              onClick={() => setCompleted((p) => ({ ...p, [step.id]: !p[step.id] }))}
+              className="group flex items-start gap-2.5 border-t border-[var(--border-subtle)] py-2 text-left transition-colors hover:bg-[var(--bg-subdued)]/40"
             >
-              {step.completed ? (
-                <CheckCircle2 className="h-4 w-4 text-[var(--primary)] mt-0.5 shrink-0" />
-              ) : (
-                <Circle className="h-4 w-4 text-[var(--text-secondary)] mt-0.5 shrink-0" />
-              )}
+              <span
+                className={cn(
+                  "mt-[2px] flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[3px] border transition-colors",
+                  done
+                    ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--on-primary)]"
+                    : "border-[var(--text-tertiary)] text-transparent group-hover:border-[var(--text-primary)]"
+                )}
+              >
+                <Check className="h-2.5 w-2.5 stroke-[3]" />
+              </span>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2">
                   <span
                     className={cn(
-                      "text-xs font-semibold",
-                      step.completed
-                        ? "text-[var(--primary)]"
-                        : "text-[var(--text-primary)]"
+                      "text-[12px]",
+                      done ? "text-[var(--text-tertiary)] line-through" : "text-[var(--text-primary)]"
                     )}
                   >
-                    {step.dateLabel}
+                    {step.title}
                   </span>
-                  <span
-                    className={cn(
-                      "text-[10px] font-medium",
-                      step.isToday ? "text-[var(--primary)] uppercase font-bold" : "text-[var(--text-secondary)]"
-                    )}
-                  >
-                    {step.durationLabel}
+                  <span className="tnum shrink-0 font-mono text-[9px] text-[var(--text-tertiary)]">
+                    {step.estimatedMinutes}m
                   </span>
                 </div>
-                <p
-                  className={cn(
-                    "text-xs truncate mt-0.5",
-                    step.completed && !step.isToday
-                      ? "line-through text-[var(--text-secondary)]"
-                      : "text-[var(--text-primary)] font-normal"
-                  )}
-                >
-                  {step.taskTitle}
+                <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+                  <span>{step.stageLabel}</span>
+                  <span>·</span>
+                  <span>
+                    {step.daysRemaining <= 0 ? "today" : `in ${step.daysRemaining}d`}
+                  </span>
                 </p>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
 
-      {/* Action Button */}
       <Button
         type="button"
-        onClick={handleAddAll}
-        className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-[var(--radius-md)] text-xs font-medium shadow-sm"
+        size="sm"
+        onClick={handleAddFirst}
+        disabled={!firstOpen || addedId === firstOpen.id}
+        className="mt-3 w-full text-[11px] font-medium"
       >
-        <CalendarCheck className="h-4 w-4" />
-        <span>
-          {blocksAdded ? "All 5 prep blocks scheduled ✓" : "Add all prep blocks to calendar"}
-        </span>
+        {addedId === firstOpen?.id
+          ? "Added to today"
+          : firstOpen
+            ? "Add first sitting to today"
+            : "Plan complete"}
       </Button>
-    </div>
+    </section>
   );
 }
